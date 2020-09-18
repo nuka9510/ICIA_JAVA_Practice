@@ -1,32 +1,44 @@
 package frontend_calculator;
 
+import java.util.Scanner;
+
 public class FrontEnd {
+	private String title;
 	
 	public FrontEnd() {
+		this.title = this.title();
+		this.entrance();
+	}
+	
+	private void entrance() {
+		this.print(this.title+"\n"
+					+"[시작할까요?]\n"
+					+"1. 시작\t0. 종료\n"
+					+"________________ : ");
+		String menu = this.userInput();
+		if(menu.equals("1")) {
+			System.out.println("START");
+		} else {
+			System.out.println("END");
+		}
+	}
+	
+	private String userInput() {
+		Scanner scanner = new Scanner(System.in);
+		return scanner.next();
+	}
+	
+	private String title() {
+		StringBuffer title = new StringBuffer();
+		title.append("--------------------------------------------\n\n");
+		title.append("\tFour Arithmetical Operator v1.0\n\n");
+		title.append("\t\t\t\tby nuka\n\n");
+		title.append("--------------------------------------------");
+		return title.toString();
 		
 	}
 	
-	public void title() {
-		String title1 = "--------------------------------------------\n\n"
-				+ "\tFour Arithmetical Operator v1.0\n\n"
-				+ "\t\t\t\tby nuka\n\n"
-				+ "--------------------------------------------";
-		println(title1);
-		StringBuffer title2 = new StringBuffer();
-		title2.append("--------------------------------------------\n\n");
-		title2.append("\tFour Arithmetical Operator v1.0\n\n");
-		title2.append("\t\t\t\tby nuka\n\n");
-		title2.append("--------------------------------------------");
-		println(title2.toString());
-		StringBuilder title3 = new StringBuilder();
-		title3.append("--------------------------------------------\n\n");
-		title3.append("\tFour Arithmetical Operator v1.0\n\n");
-		title3.append("\t\t\t\tby nuka\n\n");
-		title3.append("--------------------------------------------");
-		println(title3.toString());
-		}
-	
-	public void println(String str) {
-		System.out.println(str);
+	private void print(String str) {
+		System.out.print(str);
 	}
 }
