@@ -1,0 +1,112 @@
+1. project_name : calculator 
+2. package_name : 
+	- controller : 제어 관련 클래스 집합
+ 	- operator : 연산 관련 클래스 집합
+3. Class_name :
+	- Controller 
+	   - 출력기능
+	   - 입력기능
+	   
+	- Operation
+	  - F : int number1 
+	  - F : int number2
+	  - C : Operation(int, int) 	
+	  - M : int plus() : 덧셈
+	  - M : int minus() : 뺄셈
+	  - M : int product() : 곱셈
+	  - M : int divide() : 나눗셈
+
+4. Front-End
+- Part 1. Start-up Screen
+******************************************
+
+       Four Arithmetical Operator v1.0
+       
+  					Designed by HoonZzang
+  					   
+******************************************
+
+ [시작할까요?]  
+  1. 시작      0. 종료
+ _______________________________ : _
+
+- Part 2. Start Operation
+******************************************
+
+       Four Arithmetical Operator v1.0
+       
+  					Designed by HoonZzang
+  					   
+******************************************
+
+ [숫자 입력]   
+  : _
+ 
+ 
+ ******************************************
+
+       Four Arithmetical Operator v1.0
+       
+  					Designed by HoonZzang
+  					   
+******************************************
+
+ [연산자 선택]
+  1. 더하기    2. 빼기
+  3. 곱하기    4. 나누기      
+ ________________________ : _
+ 
+ 
+******************************************
+
+       Four Arithmetical Operator v1.0
+       
+  					Designed by HoonZzang
+  					   
+******************************************
+ [숫자 입력]   
+  : _
+ 
+
+- Part 3. End Operation
+******************************************
+
+       Four Arithmetical Operator v1.0
+       
+  					Designed by HoonZzang
+  					   
+******************************************
+-- Control Command
+
+/* if(condition) {
+		True statements~
+	} else {
+		False statements~
+	}
+
+condition --> result --> boolean  :: bit 
+
+*/
+
+/* Loop 
+
+  1. while(condition){
+  		
+  	 }
+  
+  2. for(start-value; condition; increase){
+  		
+     }
+  
+  3. switch (comparative target){
+  		case [comparative value]:
+  		
+  		case [comparative value]:
+  		  
+  	 }
+*/
+
+
+
+
+
