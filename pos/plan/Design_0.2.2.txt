@@ -1,0 +1,169 @@
+/* POS S/W Development (part. Distribution) */
+
+Part 1. Requirements
+ - 유통기한 초과 여부
+ - 판매 보류 기능
+ - 바코드 입력 방식 외 키보드 입력방식
+ - 재고표시
+ - MIS
+ - 상품판매
+
+Part 2. Job List
+ - POS loading
+ - Log In
+ - Goods Registration, Update
+ - Customer Age
+ - Sales
+ - Expire Date
+ - Stock
+ - 판매보류
+ - 판매취소
+ - 카테고리별 베스트 상품 조회
+ - 일일매출현황
+
+Part 3. Job Processing
+
+ - POS loading : pos.loader.Loader - pos.controller.FrontController ;
+ 
+ /* pos.service.Access */
+ 
+ - Sign In : pos.controller.FrontController [ID, PW]
+			- pos.controller.BackController [ID, PW]
+			- pos.service.Access [ID, PW]
+			- pos.dataBase.salerData [ID, PW] -> [ID, UserCode, Name, Phone, Date]
+			- pos.service.Access [ID, UserCode, Name, Phone, Date]
+	
+		1.	- pos.controller.BackController [ID]
+			- pos.controller.FrontController [ID] ;
+		
+		2.	- pos.dataBase.salerHistory [UserCode, Name, Phone, Date] ;
+
+ - Sign up : pos.controller.FrontController [ID, PW, Name, Phone]
+			- pos.controller.BackController [ID, PW, Name, Phone]
+			- pos.service.Access [ID, PW, Name, Phone] 
+ 			- pos.dataBase.salerData [ID, PW, Name, Phone]
+ 			- pos.service.Access [ID, PW, Name, Phone] -> [ID, PW, UserCode, Name, Phone]
+ 			- pos.dataBase.salerData [ID, PW, UserCode, Name, Phone]
+			- pos.controller.FrontController ;
+
+ - SalerModify : pos.controller.FrontController [PW, Phone]
+				- pos.controller.BackController [PW, Phone]
+				- pos.service.Access [PW, Phone]
+ 				- pos.dataBase.salerData [PW, Phone]
+				- pos.controller.FrontController ;
+			
+ /* pos.service.Sale */
+ 
+ - Customer Age : pos.controller.FrontController [GoodsCode, Amount, Date, Customer Age]
+				- pos.controller.BackController [GoodsCode, Amount, Date, Customer Age]
+				- pos.service.Sale [GoodsCode, Amount, Date, Customer Age]
+ 		 		- pos.dataBase.goodsInfo [GoodsCode, Amount, Date, Customer Age] -> [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+				- pos.service.Sale [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+
+		1. 	- pos.controller.BackController [Amount, Date],[GoodsCode, Name, Price, ExpireDate]
+			- pos.controller.FrontController [Amount, Date],[GoodsCode, Name, Price, ExpireDate] ;
+		
+		2. 	- pos.dataBase.saleInfo [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate] ;
+ 
+ - Sales : pos.controller.FrontController [GoodsCode, Amount, Date, Customer Age]
+			- pos.controller.BackController [GoodsCode, Amount, Date, Customer Age]
+			- pos.service.Sale [GoodsCode, Amount, Date, Customer Age]
+			- pos.dataBase.goodsInfo [GoodsCode, Amount, Date, Customer Age] -> [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+			- pos.service.Sale [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+
+		1.	- pos.controller.BackController [Amount, Date],[GoodsCode, Name, Price, ExpireDate]
+			- pos.controller.FrontController [Amount, Date],[GoodsCode, Name, Price, ExpireDate] ;
+		
+		2.	- pos.dataBase.saleInfo [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate] ; 
+		
+		3.	- pos.dataBase.goodsInfo [Amount, Date],[GoodsCode, Name, Price] ; 
+
+ - Cancel : pos.controller.FrontController [Date, GoodsCode]
+			- pos.controller.BackController [Date, GoodsCode]
+			- pos.service.Sale [Date, GoodsCode]
+			- pos.dataBase.saleInfo [Date, GoodsCode] -> [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age]
+			- pos.service.Sale [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age]
+
+		1.	- pos.controller.BackController [GoodsCode, Name, Amount, Price, Date]
+			- pos.controller.FrontController [GoodsCode, Name, Amount, Price, Date] ;
+		
+		2.	- pos.dataBase.saleInfo [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age] ; 
+		
+		3.	- pos.dataBase.goodsInfo  [GoodsCode, Name, Amount, Price, Date] ; 
+ 
+ - Hold : 1. pos.controller.FrontController  [GoodsCode, Amount, Date, Customer Age, State]
+		- pos.controller.BackController [GoodsCode, Amount, Date, Customer Age, State]
+		- pos.service.Sale [GoodsCode, Amount, Date, Customer Age, State]
+		- pos.dataBase.saleInfo [GoodsCode, Amount, Date, Customer Age, State]
+ 		- pos.controller.FrontController ;
+ 			
+ 	2. pos.controller.FrontController [Date, State]
+		- pos.controller.BackController [Date, State]
+		- pos.service.Sale [Date, State]
+		- pos.dataBase.saleInfo [Date, State] -> [GoodsCode, Amount, Date, Customer Age, State]
+	 	- pos.service.Sale [GoodsCode, Amount, Date, Customer Age, State]
+		- pos.dataBase.goodsInfo [GoodsCode, Amount, Date, Customer Age, State] -> [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+		- pos.service.Sale [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+			
+	2-1.	- pos.controller.BackController [Amount, Date],[GoodsCode, Name, Price, ExpireDate]
+		- pos.controller.FrontController [Amount, Date],[GoodsCode, Name, Price, ExpireDate] ;
+ 
+ 	2-2.	- pos.dataBase.saleInfo [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate] ; 
+ 
+ 	2-3.	- pos.dataBase.goodsInfo [Amount, Date],[GoodsCode, Name, Price] ; 
+
+ - Expire Date.01 : pos.controller.FrontController [GoodsCode, Amount, Date, Customer Age]
+			- pos.controller.BackController [GoodsCode, Amount, Date, Customer Age]
+			- pos.service.Sale [GoodsCode, Amount, Date, Customer Age]
+			- pos.database.goodsInfo [GoodsCode, Amount, Date, Customer Age] -> [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+			- pos.service.Sale [Amount, Date, Customer Age],[GoodsCode, Name, Price, ExpireDate]
+			- pos.controller.BackController [GoodsCode, Name, Price, ExpireDate]
+			- pos.controller.FrontController [GoodsCode, Name, Price, ExpireDate] ;
+
+ /* pos.service.Management */
+
+ - Stock : pos.controller.FrontController [GoodsCode]
+		- pos.controller.BackController [GoodsCode]
+		- pos.service.Management [GoodsCode]
+		- pos.database.goodsInfo [GoodsCode] -> [GoodsCode, Name, Stock, SafetyStock]
+ 		- pos.service.Management [GoodsCode, Name, Stock, SafetyStock]
+		- pos.controller.BackController [GoodsCode, Name, Stock, SafetyStock]
+		- pos.controller.FrontController [GoodsCode, Name, Stock, SafetyStock] ;
+ 
+ - Goods Registration, Update : pos.controller.FrontController [Date, GoodsCode, Name, Price, Amount, ExpireDate, SafetyStock]
+				- pos.controller.BackController [Date, GoodsCode, Name, Price, Amount, ExpireDate, SafetyStock]
+				- pos.service.Management [Date, GoodsCode, Name, Price, Amount, ExpireDate, SafetyStock]
+ 				- pos.dataBase.goodsInfo [Date, GoodsCode, Name, Price, Amount, ExpireDate, SafetyStock]
+ 				- pos.controller.FrontController ;
+ 
+ - 카테고리별 베스트 상품 조회 : pos.controller.FrontController [Category]
+					- pos.controller.BackController [Category]
+					- pos.service.Management [Category]
+					- pos.dataBase.saleInfo [Category] -> [GoodsCode, Name, Stock, SafetyStock]
+ 					- pos.service.Management [GoodsCode, Name, Stock, SafetyStock]
+ 					- pos.controller.BackController [GoodsCode, Name, Stock, SafetyStock]
+			`		- pos.controller.FrontController [GoodsCode, Name, Stock, SafetyStock] ;
+ 
+ - 일일매출현황 : pos.controller.FrontController [Date]
+			- pos.controller.BackController [Date]
+			- pos.service.Management [Date]
+			- pos.dataBase.saleInfo [Date] -> [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State]
+			- pos.service.Management [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State]
+			- pos.controller.BackController [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State]
+			- pos.controller.FrontController [GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State] ;
+
+ - Expire Date.02 : pos.controller.FrontController [GoodsCode]
+			- pos.controller.BackController [GoodsCode]
+			- pos.service.Management [GoodsCode]
+			- pos.database.goodsInfo [GoodsCode] -> [Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock]
+			- pos.service.Management [Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock]
+			- pos.controller.BackController [Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock]
+			- pos.controller.FrontController [Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock] ;
+
+Part 4. Client Design
+
+Part 5. Service Design
+
+Part 6. Test Data Collection
+
+Part 7. Coding & Debugging

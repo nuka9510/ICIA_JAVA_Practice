@@ -1,0 +1,49 @@
+/* POS S/W Development (part. Distribution) */
+
+Part 1. Requirements
+ - 유통기한 초과 여부
+ - 판매 보류 기능
+ - 바코드 입력 방식 외 키보드 입력방식
+ - 재고표시
+ - MIS
+ - 상품판매
+
+Part 2. Job List
+ - POS loading
+ - Log In
+ - Goods Registration, Update
+ - Customer Age
+ - Sales
+ - Expire Date
+ - Stock
+ - 판매보류
+ - 판매취소
+ - 카테고리별 베스트 상품 조회
+ - 일일매출현황
+
+Part 3. Job Processing
+Num	Job			Request		Values
+1 	Log In  	A			userInfo[code,pwd]
+2	User Reg	A			userInfo[code,pwd,name,phone]							
+3	User Mod	A			userInfo[code,pwd,phone]
+4	Goods Reg	M			goodsInfo[
+								code, name, price,
+								exDate, stocks, safeStocks]
+5   Goods Mod	M			goodInfo[code, price, 
+									 stocks, safeStocks]
+6 	Goods Sea	S			goodsInfo[code]
+				M			goodsInfo[code]
+7 	Sales Reg	S			salesInfo[date, code, quantity, State]						 
+8	Sales Hold	S			salesInfo[date, code, State]
+9	Sales Can	S			salesInfo[date, code, State]
+10	Daily Stat	M			salesInfo[date]
+11	Best Goods	M			salesInfo[date]
+
+
+Part 4. Client Design
+
+Part 5. Service Design
+
+Part 6. Test Data Collection
+
+Part 7. Coding & Debugging
