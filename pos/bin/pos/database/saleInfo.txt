@@ -1,1 +1,1 @@
-GoodsCode, Name, ExpireDate, Amount, Price, Date, Customer Age, 일단보류(SafetyStock)
+GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State

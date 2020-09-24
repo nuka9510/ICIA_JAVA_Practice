@@ -1,1 +1,1 @@
-ModDate, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock
+Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock

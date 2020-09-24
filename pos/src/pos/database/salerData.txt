@@ -1,1 +1,1 @@
-ID, PassWord, UserCode, Name, Phone
+employeeCode, accessCode, salerName, phone, salerLevel
