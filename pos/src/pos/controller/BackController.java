@@ -1,6 +1,6 @@
 package pos.controller;
 
-import pos.database.SalerDataBean;
+import pos.database.SalerBean;
 import pos.service.Access;
 
 public class BackController {
@@ -10,20 +10,24 @@ public class BackController {
 	}
 	
 	public String[] signIn(String[] userInfo) {
-		Access ac = new Access();
-		SalerDataBean sdb = new SalerDataBean();
-		String[] info = new String[4];
+		SalerBean sb = new SalerBean();
+		Access ac;
+		String[] signInInfo;
 		
-		sdb.setEmployeeCode(userInfo[0]);
-		sdb.setAccessCode(userInfo[1]);
-		ac.entrance("A1", sdb);
+		sb.setRequest(userInfo[0]);
+		sb.setEmployeeCode(userInfo[1]);
+		sb.setAccessCode(userInfo[2]);
 		
-		info[0] = sdb.getEmployeeCode();
-		info[1] = sdb.getSalerName();
-		info[2] = sdb.isSalerLevel()?"Manager":"Mate";
-		info[3] = sdb.getAccessTime();
-				
-		return info;
+		ac = new Access();
+		ac.entrance(sb);
+		
+		signInInfo = new String[4];
+		signInInfo[0] = sb.getEmployeeCode();
+		signInInfo[1] = sb.getSalerName();
+		signInInfo[2] = sb.isSalerLevel()?"Manager":"Mate";
+		signInInfo[3] = sb.getAccessTime();
+		
+		return signInInfo;
 	}
 
 }

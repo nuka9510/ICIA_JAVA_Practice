@@ -1,6 +1,6 @@
 package pos.service;
 
-import pos.database.SalerDataBean;
+import pos.database.SalerBean;
 
 public class Access {
 	
@@ -8,31 +8,31 @@ public class Access {
 			
 		}
 		
-		public void entrance(String request, SalerDataBean sdb) {
-			switch(request) {
+		public void entrance(SalerBean sb) {
+			switch(sb.getRequest()) {
 			case "A1":
-				signIn(sdb);
+				this.signIn(sb);
 				break;
 			case "A2":
-				salerReg(sdb);
+				this.salerReg(sb);
 				break;
 			case "A3":
-				salerMod(sdb);
+				this.salerMod(sb);
 				break;
 			}
 		}
 		
-		private void signIn(SalerDataBean sdb) {
-				sdb.setSalerName("Maginot");
-				sdb.setSalerLevel(true);
-				sdb.setAccessTime("202009241812");
+		private void signIn(SalerBean sb) {
+			sb.setSalerName("Maginot");
+			sb.setSalerLevel(true);
+			sb.setAccessTime("20200925");
 		}
 		
-		private void salerReg(SalerDataBean sdb) {
+		private void salerReg(SalerBean sb) {
 			
 		}
 		
-		private void salerMod(SalerDataBean sdb) {
+		private void salerMod(SalerBean sb) {
 			
 		}
 

@@ -12,31 +12,32 @@ public class FrontController {
 	}
 	
 	private void init(String title) {
-		this.select(this.signIn(title));
+		BackController bc = new BackController();
+		String[] userInfo = this.signIn(title);
+		userInfo = bc.signIn(userInfo);
+		this.select(title, userInfo);
 	}
 	
 	private String[] signIn(String title) {
-		String[] signIn;
-		String[] userInfo = new String[2];
-		BackController bc = new BackController();
+		String[] userInfo = new String[3];
 		
+		userInfo[0] = "A1";
 		this.print(title+"\t[Sign In]\n" + 
 	            "\n" + 
 	            "\t[Employee Code] : ");
-		userInfo[0] = this.sc.next();
-		this.print("\t[Access Code]   : ");
 		userInfo[1] = this.sc.next();
+		this.print("\t[Access Code]   : ");
+		userInfo[2] = this.sc.next();
 		
-		signIn = bc.signIn(userInfo);
-		return signIn;
+		return userInfo;
 	}
 	
-	private void select(String[] info) {
-		this.print("selectService\n");
-		this.print(info[0] + "\n");
-		this.print(info[1] + "\n");
-		this.print(info[2] + "\n");
-		this.print(info[3] + "\n");
+	private void select(String title, String[] userinfo) {
+		this.print(title + "selectService\n\n[ ");
+		for(int i=0;i<userinfo.length;i++) {
+			this.print(userinfo[i] + " ");
+		}
+		this.print("]");
 	}
 	
 	private String title() {
