@@ -1,1 +1,1 @@
-UserCode, ID, Name, Phone, Date
+employeeCode, salerName, phone, salerLevel, accessTime

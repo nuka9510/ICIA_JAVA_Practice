@@ -2,7 +2,6 @@ package pos.database;
 
 public class SalerBean {
 	private String request;
-	
 	private String employeeCode;
 	private String accessCode;
 	private String salerName;
