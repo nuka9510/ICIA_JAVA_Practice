@@ -27,29 +27,29 @@ Part 3. Job Processing
  
  /* pos.service.Access */
  
- - Sign In : pos.controller.FrontController [ID, PW]
-			- pos.controller.BackController [ID, PW]
-			- pos.service.Access [ID, PW]
-			- pos.dataBase.salerData [ID, PW] -> [ID, UserCode, Name, Phone, Date]
-			- pos.service.Access [ID, UserCode, Name, Phone, Date]
+ - Sign In : pos.controller.FrontController [employeeCode, accessCode]
+			- pos.controller.BackController [employeeCode, accessCode]
+			- pos.service.Access [employeeCode, accessCode]
+			- pos.dataBase.salerData [employeeCode, accessCode] -> [employeeCode, salerName, phone, salerLevel, accessTime]
+			- pos.service.Access [employeeCode, salerName, Phone, salerLevel, accessTime]
 	
-		1.	- pos.controller.BackController [ID]
-			- pos.controller.FrontController [ID] ;
+		1.	- pos.controller.BackController [employeeCode, salerName, salerLevel, accessTime]
+			- pos.controller.FrontController [employeeCode, salerName, salerLevel, accessTime] ;
 		
-		2.	- pos.dataBase.salerHistory [UserCode, Name, Phone, Date] ;
+		2.	- pos.dataBase.salerHistory [employeeCode, salerName, phone, salerLevel, accessTime]] ;
 
- - Sign up : pos.controller.FrontController [ID, PW, Name, Phone]
-			- pos.controller.BackController [ID, PW, Name, Phone]
-			- pos.service.Access [ID, PW, Name, Phone] 
- 			- pos.dataBase.salerData [ID, PW, Name, Phone]
- 			- pos.service.Access [ID, PW, Name, Phone] -> [ID, PW, UserCode, Name, Phone]
- 			- pos.dataBase.salerData [ID, PW, UserCode, Name, Phone]
+ - Sign up : pos.controller.FrontController [employeeCode, accessCode, salerName, phone]
+			- pos.controller.BackController [employeeCode, accessCode, salerName, phone]
+			- pos.service.Access [employeeCode, accessCode, salerName, phone]
+ 			- pos.dataBase.salerData [employeeCode, accessCode, salerName, phone]
+ 			- pos.service.Access [employeeCode, accessCode, salerName, phone] -> [employeeCode, accessCode, salerName, phone, salerLevel]
+ 			- pos.dataBase.salerData [employeeCode, accessCode, salerName, phone, salerLevel]
 			- pos.controller.FrontController ;
 
- - SalerModify : pos.controller.FrontController [PW, Phone]
-				- pos.controller.BackController [PW, Phone]
-				- pos.service.Access [PW, Phone]
- 				- pos.dataBase.salerData [PW, Phone]
+ - SalerModify : pos.controller.FrontController [accessCode, phone]
+				- pos.controller.BackController [accessCode, phone]
+				- pos.service.Access [accessCode, phone]
+ 				- pos.dataBase.salerData [accessCode, phone]
 				- pos.controller.FrontController ;
 			
  /* pos.service.Sale */
