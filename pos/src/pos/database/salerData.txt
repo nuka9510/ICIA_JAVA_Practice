@@ -1,1 +1,1 @@
-employeeCode, accessCode, salerName, phone, salerLevel
+employeeCode, accessCode, employeeName, employeePhone, employeeLevel
