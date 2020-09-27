@@ -1,0 +1,1 @@
+Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock
