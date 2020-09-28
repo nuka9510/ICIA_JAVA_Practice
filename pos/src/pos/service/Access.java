@@ -1,6 +1,7 @@
 package pos.service;
 
-import pos.database.SalerBean;
+import pos.database.DataAccessObject;
+import pos.database.EmployeeBean;
 
 public class Access {
 	
@@ -8,31 +9,45 @@ public class Access {
 			
 		}
 		
-		public void entrance(SalerBean sb) {
-			switch(sb.getRequest()) {
+		public boolean entrance(EmployeeBean eb) {
+			boolean result = false;
+			switch(eb.getRequest()) {
 			case "A1":
-				this.signIn(sb);
+				if(this.signIn(eb)) {
+					result = true;
+				}
 				break;
 			case "A2":
-				this.salerReg(sb);
+				this.employeeReg(eb);
 				break;
 			case "A3":
-				this.salerMod(sb);
+				this.employeeMod(eb);
 				break;
 			}
+			return result;
 		}
 		
-		private void signIn(SalerBean sb) {
-			sb.setSalerName("Maginot");
-			sb.setSalerLevel(true);
-			sb.setAccessTime("20200925");
+		private boolean signIn(EmployeeBean eb) {
+			boolean result = false;
+			DataAccessObject dao = new DataAccessObject();
+			if(dao.isEmployeeCode(0, eb)) {
+				if(dao.isAccessCode(0, eb)) {
+					result = true;
+					dao.getEmployeeData(0, eb);
+					dao.setEmployeeHistory(1, eb);
+				}
+			}
+			
+			eb.setAccessCode(null);
+			
+			return result;
 		}
 		
-		private void salerReg(SalerBean sb) {
+		private void employeeReg(EmployeeBean eb) {
 			
 		}
 		
-		private void salerMod(SalerBean sb) {
+		private void employeeMod(EmployeeBean eb) {
 			
 		}
 

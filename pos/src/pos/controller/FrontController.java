@@ -12,10 +12,15 @@ public class FrontController {
 	}
 	
 	private void init(String title) {
+		String[] userInfo = null;
 		BackController bc = new BackController();
-		String[] userInfo = this.signIn(title);
-		userInfo = bc.signIn(userInfo);
-		this.select(title, userInfo);
+		while(true) {
+			userInfo = this.signIn(title);
+			userInfo = bc.signIn(userInfo);
+			if(userInfo != null) {
+				this.select(title, userInfo);
+			}
+		}
 	}
 	
 	private String[] signIn(String title) {
@@ -33,11 +38,18 @@ public class FrontController {
 	}
 	
 	private void select(String title, String[] userinfo) {
+		String select;
+		
 		this.print(title + "selectService\n\n[ ");
 		for(int i=0;i<userinfo.length;i++) {
 			this.print(userinfo[i] + " ");
 		}
-		this.print("]");
+		this.print("]\n\n1. 惑前魄概\t\t2. 惑前馆前\n"); 
+		if(userinfo[2].equals("Manager")) {
+			this.print("3. 流盔包府\t\t4. 康诀包府\n");
+		}
+		this.print("\n________________________________ Select : ");
+		select = sc.next();
 	}
 	
 	private String title() {

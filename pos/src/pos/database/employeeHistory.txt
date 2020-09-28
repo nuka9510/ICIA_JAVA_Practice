@@ -1,0 +1,2 @@
+employeeCode,employeeName,employeePhone,employeeLevel,accessTime
+1111,KJW,000-0000-0000,Manager,2020.09.28 22:32:45
