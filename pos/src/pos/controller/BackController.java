@@ -1,7 +1,9 @@
 package pos.controller;
 
 import pos.database.EmployeeBean;
+import pos.database.GoodsBean;
 import pos.service.Access;
+import pos.service.Sale;
 
 public class BackController {
 
@@ -29,6 +31,42 @@ public class BackController {
 		}
 
 		return result;
+	}
+	
+	public void employeeReg(String[] regInfo) {
+		EmployeeBean eb = new EmployeeBean();
+		Access ac;
+		
+		eb.setRequest(regInfo[0]);
+		eb.setEmployeeCode(regInfo[1]);
+		eb.setAccessCode(regInfo[2]);
+		eb.setEmployeeName(regInfo[3]);
+		eb.setEmployeephone(regInfo[4]);
+		eb.setEmployeeLevel(regInfo[5].equals("Manager")?true:false);
+		
+		ac = new Access();
+		ac.entrance(eb);
+		
+	}
+	
+	public String[] sale(String[] saleInfo) {
+		String[] saleResult = null;
+		GoodsBean gb = new GoodsBean();
+		Sale sale;
+		
+		gb.setRequest(saleInfo[0]);
+		gb.setGoodsCode(saleInfo[1]);
+		
+		sale = new Sale();
+		sale.entrance(gb);
+		
+		saleResult = new String[3];
+		saleResult[0] = gb.getGoodsCode();
+		saleResult[1] = gb.getGoodsName();
+		saleResult[2] = gb.getGoodsPrice();
+		
+		
+		return saleResult;
 	}
 
 }

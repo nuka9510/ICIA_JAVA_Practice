@@ -1,5 +1,7 @@
 package pos.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import pos.database.DataAccessObject;
 import pos.database.EmployeeBean;
 
@@ -30,10 +32,16 @@ public class Access {
 		private boolean signIn(EmployeeBean eb) {
 			boolean result = false;
 			DataAccessObject dao = new DataAccessObject();
+			Date date;
+			SimpleDateFormat dateFormat;
+			
 			if(dao.isEmployeeCode(0, eb)) {
 				if(dao.isAccessCode(0, eb)) {
 					result = true;
 					dao.getEmployeeData(0, eb);
+					date = new Date();
+					dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+					eb.setAccessTime(dateFormat.format(date));
 					dao.setEmployeeHistory(1, eb);
 				}
 			}
@@ -44,7 +52,8 @@ public class Access {
 		}
 		
 		private void employeeReg(EmployeeBean eb) {
-			
+			DataAccessObject dao = new DataAccessObject();
+			dao.setEmployeeReg(0, eb);
 		}
 		
 		private void employeeMod(EmployeeBean eb) {
