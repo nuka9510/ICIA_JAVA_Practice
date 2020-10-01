@@ -13,10 +13,36 @@ public class FrontController {
 	
 	private void init(String title) {
 		BackController bc = new BackController();
-		String[] userInfo = this.signIn(title);
-		userInfo = bc.signIn(userInfo);
-		String[] select = this.select(title, userInfo);
-		System.out.println(bc.selectService(select));
+		String[] userInfo = null;
+		String[] selectInfo = null;
+		while(true) {
+			userInfo = this.signIn(title);
+			userInfo = bc.signIn(userInfo);
+			while(userInfo != null) {
+				switch(this.select(title, userInfo)) {
+				case "1":
+					this.sale(title, userInfo);
+					break;
+				case "2":
+					this.payback(title, userInfo);
+					break;
+				case "3":
+					switch(this.employeeManagement(title, userInfo)) {
+					case "1":
+						String[] regInfo = this.employeeReg(title, userInfo);
+						bc.employeeReg(regInfo);
+						break;
+					case "2":
+						this.employeeMod(title, userInfo);
+						break;
+					}
+					break;
+				case "4":
+					this.saleManagement(title, userInfo);
+					break;
+				}
+			}
+		}
 	}
 	
 	private String[] signIn(String title) {
@@ -33,9 +59,8 @@ public class FrontController {
 		return userInfo;
 	}
 	
-	private String[] select(String title, String[] userInfo) {
+	private String select(String title, String[] userInfo) {
 		String service;
-		String[] resultInfo = null;
 		this.print(title + "[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
@@ -48,22 +73,7 @@ public class FrontController {
 		this.print("\n_____________________ Select : ");
 		service = sc.next();
 		
-		switch(service) {
-		case "1":
-			resultInfo = this.sale(title, userInfo);
-			break;
-		case "2":
-			resultInfo = this.payback(title, userInfo);
-			break;
-		case "3":
-			resultInfo = this.salerManagement(title, userInfo);
-			break;
-		case "4":
-			resultInfo = this.saleManagement(title, userInfo);
-			break;
-		}
-		
-		return resultInfo;
+		return service;
 	}
 	
 	private String[] sale(String title, String[] userInfo) {
@@ -76,25 +86,16 @@ public class FrontController {
 		return resultInfo;
 	}
 	
-	private String[] salerManagement(String title, String[] userInfo) {
+	private String employeeManagement(String title, String[] userInfo) {
 		String service;
-		String[] resultInfo = null;
 		this.print(title + "[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
-		this.print("]\n\nselectService\n\n1. 직원등록\t\t2. 지원정보수정\n\n_____________________ Select : ");
+		this.print("]\n\nselectService\n\n1. 직원등록\t\t2. 직원정보수정\n\n_____________________ Select : ");
 		service = sc.next();
 		
-		switch(service) {
-		case "1":
-			resultInfo = this.salerReg(title, userInfo);
-			break;
-		case "2":
-			resultInfo = this.salerMod(title, userInfo);
-			break;
-		}
-		return resultInfo;
+		return service;
 	}
 	
 	private String[] saleManagement(String title, String[] userInfo) {
@@ -102,7 +103,7 @@ public class FrontController {
 		return resultInfo;
 	}
 	
-	private String[] salerReg(String title, String[] userInfo) {
+	private String[] employeeReg(String title, String[] userInfo) {
 		String[] regInfo = new String[6];
 		this.print(title + "[ ");
 		for(int i=0;i<userInfo.length;i++) {
@@ -123,7 +124,7 @@ public class FrontController {
 		return regInfo;
 	}
 	
-	private String[] salerMod(String title, String[] userInfo) {
+	private String[] employeeMod(String title, String[] userInfo) {
 		String[] modInfo = null;
 		return modInfo;
 	}

@@ -1,1 +1,2 @@
-Date, GoodsCode, Name, Price, Amount, ExpireDate, Stock, SafetyStock
+GoodsCode, GoodsName, GoodsPrice, GoodsAmount, GoodsStock, GoodsSafetyStock, GoodsExpireDate
+0001,»õ¿ì±ø,1500,10,10,50,2020.12.31

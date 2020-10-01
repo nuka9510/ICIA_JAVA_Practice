@@ -1,68 +1,60 @@
 package pos.service;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import pos.database.SalerBean;
+import pos.database.DataAccessObject;
+import pos.database.EmployeeBean;
 
 public class Access {
-	
-		public Access() {
-			
-		}
-		
-		public void entrance(SalerBean sb) {
-			switch(sb.getRequest()) {
-			case "A1":
-				this.signIn(sb);
-				break;
-			case "A2":
-				this.salerReg(sb);
-				break;
-			case "A3":
-				this.salerMod(sb);
-				break;
-			}
-		}
-		
-		private void signIn(SalerBean sb) {
-			sb.setEmployeeName("Maginot");
-			sb.setEmployeeLevel(true);
-			sb.setAccessTime("20200925");
-		}
-		
-		private void salerReg(SalerBean sb) {
-			String fileName = "D:\\ICIA\\Jong Won\\java\\pos\\src\\pos\\database\\salerData.txt";
-			FileWriter fileWriter = null;
-			BufferedWriter bufferedWriter = null;
 
-			String regInfo = sb.getEmployeeCode() + "\t" + sb.getAccessCode() + "\t" + sb.getEmployeeName()
-					+ "\t" + sb.getEmployeephone() + "\t" + (sb.isEmployeeLevel()?"Manager":"Mate");
-			System.out.println(regInfo);
-			
-			try {
-				fileWriter = new FileWriter(fileName, true);
-				bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.newLine();
-				bufferedWriter.write(regInfo);
-			} catch(Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if(bufferedWriter != null) {
-						bufferedWriter.close();
-					}
-					if(fileWriter != null) {
-						fileWriter.close();
-					}
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
+	public Access() {
+
+	}
+
+	public boolean entrance(EmployeeBean eb) {
+		boolean result = false;
+		switch(eb.getRequest()) {
+		case "A1":
+			result = this.signIn(eb);
+			break;
+		case "A2":
+			this.employeeReg(eb);
+			break;
+		case "A3":
+			this.employeeMod(eb);
+			break;
+		}
+		return result;
+	}
+
+	private boolean signIn(EmployeeBean eb) {
+		boolean result = false;
+		DataAccessObject dao = new DataAccessObject();
+		Date date;
+		SimpleDateFormat dateFormat;
+
+		if(dao.isEmployeeCode(0, eb)) {
+			if(dao.isAccessCode(0, eb)) {
+				date = new Date();
+				dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+				eb.setAccessTime(dateFormat.format(date));
+				dao.getEmployeeData(0, eb);
+				dao.setEmployeeHistory(1, eb);
+				result = true;
 			}
 		}
+		return result;
+	}
+
+	private void employeeReg(EmployeeBean eb) {
+		DataAccessObject dao = new DataAccessObject();
 		
-		private void salerMod(SalerBean sb) {
-			
-		}
+		dao.setEmployeeReg(0, eb);
+	}
+
+	private void employeeMod(EmployeeBean eb) {
+
+	}
 
 }

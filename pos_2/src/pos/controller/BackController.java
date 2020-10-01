@@ -1,54 +1,48 @@
 package pos.controller;
 
-import pos.database.SalerBean;
+import pos.database.EmployeeBean;
 import pos.service.Access;
 
 public class BackController {
-	
+
 	public BackController() {
-		
+
 	}
-	
+
 	public String[] signIn(String[] userInfo) {
-		SalerBean sb = new SalerBean();
+		EmployeeBean eb = new EmployeeBean();
 		Access ac;
-		String[] signInInfo;
-		
-		sb.setRequest(userInfo[0]);
-		sb.setEmployeeCode(userInfo[1]);
-		sb.setAccessCode(userInfo[2]);
-		
+		String[] signInInfo = null;
+
+		eb.setRequest(userInfo[0]);
+		eb.setEmployeeCode(userInfo[1]);
+		eb.setAccessCode(userInfo[2]);
+
 		ac = new Access();
-		ac.entrance(sb);
 		
-		signInInfo = new String[4];
-		signInInfo[0] = sb.getEmployeeCode();
-		signInInfo[1] = sb.getEmployeeName();
-		signInInfo[2] = sb.isEmployeeLevel()?"Manager":"Mate";
-		signInInfo[3] = sb.getAccessTime();
+		if(ac.entrance(eb)) {
+			signInInfo = new String[4];
+			signInInfo[0] = eb.getEmployeeCode();
+			signInInfo[1] = eb.getEmployeeName();
+			signInInfo[2] = eb.isEmployeeLevel()?"Manager":"Mate";
+			signInInfo[3] = eb.getAccessTime();
+		}
 		
 		return signInInfo;
 	}
-	
-	public String selectService(String[] select) {
-		SalerBean sb = new SalerBean();
-		Access ac;
-		String result = null;
+
+	public void employeeReg(String[] regInfo) {
+		EmployeeBean eb = new EmployeeBean();
+		Access ac = new Access();
 		
-		switch(select[0]) {
-		case "A2":
-			sb.setRequest(select[0]);
-			sb.setEmployeeCode(select[1]);
-			sb.setAccessCode(select[2]);
-			sb.setEmployeeName(select[3]);
-			sb.setEmployeephone(select[4]);
-			sb.setEmployeeLevel((select[5].equals("Manager"))?true:false);
-			ac = new Access();
-			ac.entrance(sb);
-			result = "¿Ï·á";
-		break ;
-		}
-		return result;
+		eb.setRequest(regInfo[0]);
+		eb.setEmployeeCode(regInfo[1]);
+		eb.setAccessCode(regInfo[2]);
+		eb.setEmployeeName(regInfo[3]);
+		eb.setEmployeephone(regInfo[4]);
+		eb.setEmployeeLevel(regInfo[5].equals("Manager")?true:false);
+		
+		ac.entrance(eb);
 	}
 
 }
