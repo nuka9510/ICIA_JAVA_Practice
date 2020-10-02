@@ -1,7 +1,9 @@
 package pos.controller;
 
 import pos.database.EmployeeBean;
+import pos.database.GoodsBean;
 import pos.service.Access;
+import pos.service.Sale;
 
 public class BackController {
 
@@ -12,7 +14,7 @@ public class BackController {
 	public String[] signIn(String[] userInfo) {
 		EmployeeBean eb = new EmployeeBean();
 		Access ac;
-		String[] signInInfo = null;
+		String[] result = null;
 
 		eb.setRequest(userInfo[0]);
 		eb.setEmployeeCode(userInfo[1]);
@@ -21,28 +23,50 @@ public class BackController {
 		ac = new Access();
 		
 		if(ac.entrance(eb)) {
-			signInInfo = new String[4];
-			signInInfo[0] = eb.getEmployeeCode();
-			signInInfo[1] = eb.getEmployeeName();
-			signInInfo[2] = eb.isEmployeeLevel()?"Manager":"Mate";
-			signInInfo[3] = eb.getAccessTime();
+			result = new String[4];
+			result[0] = eb.getEmployeeCode();
+			result[1] = eb.getEmployeeName();
+			result[2] = eb.isEmployeeLevel()?"Manager":"Mate";
+			result[3] = eb.getAccessTime();
 		}
 		
-		return signInInfo;
+		return result;
 	}
 
-	public void employeeReg(String[] regInfo) {
+	public void employeeReg(String[] employeeRegInfo) {
 		EmployeeBean eb = new EmployeeBean();
 		Access ac = new Access();
 		
-		eb.setRequest(regInfo[0]);
-		eb.setEmployeeCode(regInfo[1]);
-		eb.setAccessCode(regInfo[2]);
-		eb.setEmployeeName(regInfo[3]);
-		eb.setEmployeephone(regInfo[4]);
-		eb.setEmployeeLevel(regInfo[5].equals("Manager")?true:false);
+		eb.setRequest(employeeRegInfo[0]);
+		eb.setEmployeeCode(employeeRegInfo[1]);
+		eb.setAccessCode(employeeRegInfo[2]);
+		eb.setEmployeeName(employeeRegInfo[3]);
+		eb.setEmployeephone(employeeRegInfo[4]);
+		eb.setEmployeeLevel(employeeRegInfo[5].equals("Manager")?true:false);
 		
 		ac.entrance(eb);
+	}
+	
+	public void employeeMod(String[] employeeModInfo) {
+		
+	}
+	
+	public String[] sale(String[] saleInfo) {
+		GoodsBean gb = new GoodsBean();
+		Sale sale = new Sale();
+		String[] result = null;
+		
+		gb.setRequest(saleInfo[0]);
+		gb.setGoodsCode(saleInfo[1]);
+		
+		if(sale.entrance(gb)) {
+			result = new String[3];
+			result[0] = gb.getGoodsCode();
+			result[1] = gb.getGoodsName();
+			result[2] = gb.getGoodsPrice();
+		}
+		
+		return result;
 	}
 
 }

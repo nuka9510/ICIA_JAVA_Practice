@@ -14,14 +14,17 @@ public class FrontController {
 	private void init(String title) {
 		BackController bc = new BackController();
 		String[] userInfo = null;
-		String[] selectInfo = null;
 		while(true) {
 			userInfo = this.signIn(title);
 			userInfo = bc.signIn(userInfo);
 			while(userInfo != null) {
 				switch(this.select(title, userInfo)) {
 				case "1":
-					this.sale(title, userInfo);
+					String[] saleInfo = this.saleFirst(title, userInfo);
+					saleInfo = bc.sale(saleInfo);
+					if(saleInfo!=null) {
+						this.saleSecond(title, userInfo, saleInfo);
+					}
 					break;
 				case "2":
 					this.payback(title, userInfo);
@@ -29,8 +32,8 @@ public class FrontController {
 				case "3":
 					switch(this.employeeManagement(title, userInfo)) {
 					case "1":
-						String[] regInfo = this.employeeReg(title, userInfo);
-						bc.employeeReg(regInfo);
+						String[] employeeRegInfo = this.employeeReg(title, userInfo);
+						bc.employeeReg(employeeRegInfo);
 						break;
 					case "2":
 						this.employeeMod(title, userInfo);
@@ -76,9 +79,35 @@ public class FrontController {
 		return service;
 	}
 	
-	private String[] sale(String title, String[] userInfo) {
-		String[] resultInfo = null;
+	private String[] saleFirst(String title, String[] userInfo) {
+		String[] resultInfo = new String[2];
+		
+		resultInfo[0] = "S1";
+		this.print(title + "[ ");
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		}
+		this.print("]\n\n상품판매\n\n상품코드\n\n_____________________ Select : ");
+		resultInfo[1] = sc.next();
 		return resultInfo;
+	}
+	
+	private String[] saleSecond(String title, String[] userInfo, String[] saleInfo) {
+		String[] result = null;
+		
+		this.print(title + "[ ");
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		}
+		this.print("]\n\n[상품 판매]\n\n" +
+				"--------------------------------------------------\n" + 
+				"결재일자 : YYYY.MM.DD hh:mm:ss\n" + 
+				"--------------------------------------------------\n" + 
+				"결재번호\t상품코드\t상품명\t수량\t단가\n" + 
+				"--------------------------------------------------\n" + 
+				"01\t" + saleInfo[0] + "\t" + saleInfo[1] + "\t1\t" + saleInfo[2] + "\n" + 
+				"--------------------------------------------------");
+		return result;
 	}
 	
 	private String[] payback(String title, String[] userInfo) {
@@ -110,7 +139,7 @@ public class FrontController {
 			this.print(userInfo[i] + " ");
 		}
 		regInfo[0] = "A2";
-		this.print("]\n\nselectService\n\n[Employee Code]  : ");
+		this.print("]\n\n직원등록\n\n[Employee Code]  : ");
 		regInfo[1] = sc.next();
 		this.print("[Access Code]  : ");
 		regInfo[2] = sc.next();

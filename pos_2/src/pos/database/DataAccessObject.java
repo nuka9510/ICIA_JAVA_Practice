@@ -188,7 +188,8 @@ public class DataAccessObject {
 		}
 	}
 
-	public void getSaleInfo(int fileIndex, GoodsBean gb) {
+	public boolean getSaleInfo(int fileIndex, GoodsBean gb) {
+		boolean result = false;
 		file = new File(filePath[fileIndex]);
 		String record = null;
 		String[] recordArr;
@@ -206,6 +207,7 @@ public class DataAccessObject {
 				if(gb.getGoodsCode().equals(recordArr[0])) {
 					gb.setGoodsName(recordArr[1]);
 					gb.setGoodsPrice(recordArr[2]);
+					result = true;
 				}
 			}
 		} catch(Exception e) {
@@ -222,6 +224,7 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
+		return result;
 	}
 
 }
