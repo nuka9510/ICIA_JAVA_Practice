@@ -60,10 +60,11 @@ public class BackController {
 		gb.setGoodsCode(saleInfo[1]);
 		
 		if(sale.entrance(gb)) {
-			result = new String[3];
-			result[0] = gb.getGoodsCode();
-			result[1] = gb.getGoodsName();
-			result[2] = gb.getGoodsPrice();
+			result = new String[4];
+			result[0] = gb.getSaleDate();
+			result[1] = gb.getGoodsCode();
+			result[2] = gb.getGoodsName();
+			result[3] = gb.getGoodsPrice();
 		}
 		
 		return result;

@@ -10,6 +10,7 @@ public class GoodsBean {
 	private String goodsStock;
 	private String goodsSafetyStock;
 	private String goodsExpireDate;
+	private String saleDate;
 	
 	public String getRequest() {
 		return request;
@@ -58,5 +59,11 @@ public class GoodsBean {
 	}
 	public void setGoodsExpireDate(String goodsExpireDate) {
 		this.goodsExpireDate = goodsExpireDate;
+	}
+	public String getSaleDate() {
+		return saleDate;
+	}
+	public void setSaleDate(String saleDate) {
+		this.saleDate = saleDate;
 	}
 }
