@@ -20,10 +20,14 @@ public class FrontController {
 			while(userInfo != null) {
 				switch(this.select(title, userInfo)) {
 				case "1":
-					String[] saleInfo = this.saleFirst(title, userInfo);
-					saleInfo = bc.sale(saleInfo);
+					String[][] saleInfo = null;
+					String[] goodsInfo = this.saleFirst(title, userInfo);
+					saleInfo = bc.sale(goodsInfo, saleInfo);
 					if(saleInfo!=null) {
-						this.saleSecond(title, userInfo, saleInfo);
+						while(true) {
+							goodsInfo = this.saleSecond(title, userInfo, saleInfo);
+							saleInfo = bc.sale(goodsInfo, saleInfo);
+						}
 					}
 					break;
 				case "2":
@@ -92,22 +96,25 @@ public class FrontController {
 		return resultInfo;
 	}
 	
-	private String[] saleSecond(String title, String[] userInfo, String[] saleInfo) {
-		String[] result = null;
+	private String[] saleSecond(String title, String[] userInfo, String[][] saleInfo) {
+		String[] resultInfo = new String[2];
 		
+		resultInfo[0] = "S1";
 		this.print(title + "[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
 		this.print("]\n\n[상품 판매]\n\n" +
 				"--------------------------------------------------\n" + 
-				"결재일자 : " + saleInfo[0] + "\n" + 
-				"--------------------------------------------------\n" + 
 				"결재번호\t상품코드\t상품명\t수량\t단가\n" + 
-				"--------------------------------------------------\n" + 
-				"01\t" + saleInfo[1] + "\t" + saleInfo[2] + "\t1\t" + saleInfo[3] + "\n" + 
-				"--------------------------------------------------");
-		return result;
+				"--------------------------------------------------\n");
+		for(int i=0;i<saleInfo.length;i++) {
+			this.print(i + "\t" + saleInfo[i][0] + "\t" + saleInfo[i][1] + "\t" + i + "\t" + saleInfo[i][2] + "\n");
+		}		 
+		this.print("--------------------------------------------------" + 
+				"\n\n상품코드\n\n_____________________ Select : ");
+		resultInfo[1] = sc.next();
+		return resultInfo;
 	}
 	
 	private String[] payback(String title, String[] userInfo) {

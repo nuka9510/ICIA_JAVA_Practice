@@ -1,2 +1,4 @@
-GoodsCode, GoodsName, GoodsPrice, GoodsAmount, GoodsStock, GoodsSafetyStock, GoodsExpireDate
-0001,億辦條,1500,10,10,50,2020.12.31
+GoodsCode, GoodsName, GoodsPrice, GoodsStock, GoodsSafetyStock, GoodsExpireDate
+0001,億辦條,1500,10,50,2020.12.31
+0002,馬濠條,2000,15,50,2020.12.31
+0003,濠陞纂,1000,15,50,2020.12.31

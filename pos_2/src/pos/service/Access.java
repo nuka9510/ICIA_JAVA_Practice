@@ -2,7 +2,6 @@ package pos.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import pos.database.DataAccessObject;
 import pos.database.EmployeeBean;
 
