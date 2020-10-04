@@ -1,1 +1,1 @@
-GoodsCode, Name, Amount, Price, ExpireDate, Date, Customer Age, State
+goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, date, customerAge, state
