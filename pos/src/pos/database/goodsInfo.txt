@@ -1,2 +1,2 @@
-GoodsCode, GoodsName, GoodsPrice, GoodsAmount, GoodsStock, GoodsSafetyStock, GoodsExpireDate
-0001,货快兵,1500,10,10,50,2020.12.31
+goodsCode, goodsName, goodsPrice, goodsStock, goodsSafetyStock, goodsExpireDate
+0001,货快兵,1500,10,50,2020.12.31

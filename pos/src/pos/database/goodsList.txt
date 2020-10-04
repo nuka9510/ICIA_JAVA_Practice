@@ -1,1 +1,1 @@
-GoodsCode, Name, Price
+goodsCode, goodsName, goodsPrice
