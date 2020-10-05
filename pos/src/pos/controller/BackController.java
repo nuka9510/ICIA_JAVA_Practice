@@ -6,13 +6,13 @@ import pos.service.Access;
 import pos.service.Sale;
 
 public class BackController {
-
+	private String[] userInfo;
+	
 	public BackController() {
-
+		userInfo = null;
 	}
 
 	public String[] signIn(String[] userInfo) {
-		String[] result = null;
 		EmployeeBean eb = new EmployeeBean();
 		Access ac;
 
@@ -23,17 +23,19 @@ public class BackController {
 		ac = new Access();
 
 		if(ac.entrance(eb)) {
-			result = new String[4];
-			result[0] = eb.getEmployeeCode();
-			result[1] = eb.getEmployeeName();
-			result[2] = eb.isEmployeeLevel()?"Manager":"Mate";
-			result[3] = eb.getAccessTime();
+			this.userInfo = new String[4];
+			this.userInfo[0] = eb.getEmployeeCode();
+			this.userInfo[1] = eb.getEmployeeName();
+			this.userInfo[2] = eb.isEmployeeLevel()?"Manager":"Mate";
+			this.userInfo[3] = eb.getAccessTime();
+		}else {
+			this.userInfo = null;
 		}
 
-		return result;
+		return this.userInfo;
 	}
 	
-	public void employeeReg(String[] regInfo) {
+	public String[] employeeReg(String[] regInfo) {
 		EmployeeBean eb = new EmployeeBean();
 		Access ac;
 		
@@ -47,6 +49,22 @@ public class BackController {
 		ac = new Access();
 		ac.entrance(eb);
 		
+		return this.userInfo;
+	}
+	
+	public String[] employeeMod(String[] modInfo) {
+		EmployeeBean eb = new EmployeeBean();
+		Access ac;
+		
+		eb.setRequest(modInfo[0]);
+		eb.setEmployeeCode(modInfo[1]);
+		eb.setAccessCode(modInfo[2]);
+		
+		ac = new Access();
+		
+		ac.entrance(eb);
+		
+		return this.userInfo;
 	}
 	
 	public String[] sale(String[] saleInfo) {

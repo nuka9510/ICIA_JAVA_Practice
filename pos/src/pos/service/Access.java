@@ -1,6 +1,7 @@
 package pos.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import pos.database.DataAccessObject;
 import pos.database.EmployeeBean;
@@ -57,7 +58,20 @@ public class Access {
 		}
 		
 		private void employeeMod(EmployeeBean eb) {
+			DataAccessObject dao = new DataAccessObject();
+			ArrayList<EmployeeBean> employeeList;
 			
+			employeeList = dao.getEmployeesData(0);
+			System.out.println(employeeList.size());
+			
+			for(int i=0;i<employeeList.size();i++) {
+				if(employeeList.get(i).getEmployeeCode().equals(eb.getEmployeeCode())) {
+					employeeList.get(i).setAccessCode(eb.getAccessCode());
+					break;
+				}
+			}
+			
+			dao.setEmployeeMod(0, employeeList);
 		}
 
 }

@@ -1,3 +1,4 @@
-employeeCode,accessCode,employeeName,employeePhone,employeeLevel
-1111,0000,KJW,000-0000-0000,Manager
+employeeCode,accessCode,employeeName,employeePhone,Mate
+1111,1234,KJW,000-0000-0000,Manager
 0202,0000,WJK,111-1111-1111,Mate
+7777,0000,GGG,000-0000-0000,Mate

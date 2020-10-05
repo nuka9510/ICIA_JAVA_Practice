@@ -5,13 +5,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 public class DataAccessObject {
-	private String[] filePath = {"D:\\ICIA\\pos\\src\\pos\\database\\employeeData.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\employeeHistory.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\goodsInfo.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\goodsList.txt",
-	"D:\\ICIA\\pos\\src\\pos\\database\\saleInfo.txt"};
+	private String[] filePath = {"D:\\ICIA\\Jong Won\\java\\pos\src\\pos\\database\\employeeData.txt",
+			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\employeeHistory.txt",
+			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\goodsInfo.txt",
+			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\goodsList.txt",
+	"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\saleInfo.txt"};
 	private FileReader fr;
 	private BufferedReader br;
 	private FileWriter fw;
@@ -183,7 +184,8 @@ public class DataAccessObject {
 
 	}
 
-	public void setEmployeeReg(int fileIndex, EmployeeBean eb) {
+	public boolean setEmployeeReg(int fileIndex, EmployeeBean eb) {
+		boolean result = false;
 		file = new File(filePath[fileIndex]);
 
 		try {
@@ -202,6 +204,8 @@ public class DataAccessObject {
 
 			bw.write("\n" + sb.toString());
 			bw.flush();
+			
+			result = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,6 +221,86 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
+		
+		return result;
+	}
+	
+	public ArrayList<EmployeeBean> getEmployeesData(int fileIndex) {
+		file = new File(filePath[fileIndex]);
+		ArrayList<EmployeeBean> employeeList = new ArrayList<EmployeeBean>();
+		EmployeeBean eb;
+		String record;
+		String[] recordArr;
+		
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+			
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				recordArr = record.split(",");
+				
+				eb = new EmployeeBean();
+				
+				eb.setEmployeeCode(recordArr[0]);
+				eb.setAccessCode(recordArr[1]);
+				eb.setEmployeeName(recordArr[2]);
+				eb.setEmployeephone(recordArr[3]);
+				eb.setEmployeeLevel(recordArr[4].equals("Manager")?true:false);
+					
+				employeeList.add(eb);
+				
+			}
+			br.close();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return employeeList;
+	}
+	
+	public boolean setEmployeeMod(int fileIndex, ArrayList<EmployeeBean> employeeList) {
+		boolean result = false;
+		file = new File(filePath[fileIndex]);
+		String record;
+		
+		try {
+			fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+			
+			for(EmployeeBean eb : employeeList) {
+				record = eb.getEmployeeCode() + "," + eb.getAccessCode() + "," + eb.getEmployeeName() + "," +
+						eb.getEmployeephone() + "," + (eb.isEmployeeLevel()?"Manager":"Mate") + "\n";
+				bw.write(record);
+				bw.flush();
+				result = true;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fw != null) {
+					fw.close();
+				}
+				if(bw != null) {
+					bw.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	public void getSaleInfo(int fileIndex, GoodsBean gb) {
