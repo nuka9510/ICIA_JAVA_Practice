@@ -8,11 +8,11 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class DataAccessObject {
-	private String[] filePath = {"D:\\ICIA\\Jong Won\\java\\pos\src\\pos\\database\\employeeData.txt",
-			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\employeeHistory.txt",
-			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\goodsInfo.txt",
-			"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\goodsList.txt",
-	"D:\\ICIA\\Jong Won\\pos\\src\\pos\\database\\saleInfo.txt"};
+	private String[] filePath = {"D:\\ICIA\\pos\\src\\pos\\database\\employeeData.txt",
+			"D:\\ICIA\\pos\\src\\pos\\database\\employeeHistory.txt",
+			"D:\\ICIA\\pos\\src\\pos\\database\\goodsInfo.txt",
+			"D:\\ICIA\\pos\\src\\pos\\database\\goodsList.txt",
+	"D:\\ICIA\\pos\\src\\pos\\database\\saleInfo.txt"};
 	private FileReader fr;
 	private BufferedReader br;
 	private FileWriter fw;
@@ -54,6 +54,17 @@ public class DataAccessObject {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;
@@ -94,6 +105,17 @@ public class DataAccessObject {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;
@@ -141,6 +163,17 @@ public class DataAccessObject {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -254,16 +287,18 @@ public class DataAccessObject {
 				employeeList.add(eb);
 				
 			}
-			br.close();
 			
-		}catch(Exception e) {
+		} catch(Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				if(fr != null) {
 					fr.close();
 				}
-			}catch(Exception e) {
+				if(br != null) {
+					br.close();
+				}
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -286,9 +321,9 @@ public class DataAccessObject {
 				bw.flush();
 				result = true;
 			}
-		}catch(Exception e) {
+		} catch(Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				if(fw != null) {
 					fw.close();
@@ -303,8 +338,9 @@ public class DataAccessObject {
 		return result;
 	}
 
-	public void getSaleInfo(int fileIndex, GoodsBean gb) {
+	public boolean getGoodsInfo(int fileIndex, GoodsBean gb) {
 		file = new File(filePath[fileIndex]);
+		boolean result = false;
 		String record = null;
 		String[] recordArr;
 
@@ -319,8 +355,12 @@ public class DataAccessObject {
 				}
 				recordArr = record.split(",");
 				if(gb.getGoodsCode().equals(recordArr[0])) {
+					result = true;
 					gb.setGoodsName(recordArr[1]);
-					gb.setGoodsPrice(recordArr[2]);
+					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
+					gb.setGoodsExpireDate(recordArr[3]);
+					gb.setGoodsAmount(1);
+					break;
 				}
 			}
 		} catch(Exception e) {
@@ -337,6 +377,8 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
+		
+		return result;
 	}
 
 }

@@ -4,25 +4,38 @@ import pos.database.DataAccessObject;
 import pos.database.GoodsBean;
 
 public class Sale {
-	
+
 	public Sale() {
-		
+
 	}
-	
-	public void entrance(GoodsBean gb) {
+
+	public boolean entrance(GoodsBean gb) {
+		boolean result = false;
+
 		switch(gb.getRequest()) {
 		case "S1":
-			this.sale(gb);
+			result = this.goodsSearch(gb);
+			break;
+		case "S2":
+			result = this.payment();
 			break;
 		}
-		
+		return result;
 	}
-	
-	private void sale(GoodsBean gb) {
+
+	private boolean goodsSearch(GoodsBean gb) {
 		DataAccessObject dao = new DataAccessObject();
-		
-		dao.getSaleInfo(2, gb);
-		
+		boolean result = false;
+
+		if(dao.getGoodsInfo(2, gb)) {
+			result = true;
+		}
+		return result;
+	}
+
+	private boolean payment() {
+		boolean result = false;
+		return result;
 	}
 
 }

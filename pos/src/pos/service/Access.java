@@ -62,7 +62,6 @@ public class Access {
 			ArrayList<EmployeeBean> employeeList;
 			
 			employeeList = dao.getEmployeesData(0);
-			System.out.println(employeeList.size());
 			
 			for(int i=0;i<employeeList.size();i++) {
 				if(employeeList.get(i).getEmployeeCode().equals(eb.getEmployeeCode())) {

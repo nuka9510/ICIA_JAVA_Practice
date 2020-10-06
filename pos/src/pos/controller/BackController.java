@@ -7,7 +7,7 @@ import pos.service.Sale;
 
 public class BackController {
 	private String[] userInfo;
-	
+
 	public BackController() {
 		userInfo = null;
 	}
@@ -34,57 +34,62 @@ public class BackController {
 
 		return this.userInfo;
 	}
-	
+
 	public String[] employeeReg(String[] regInfo) {
 		EmployeeBean eb = new EmployeeBean();
 		Access ac;
-		
+
 		eb.setRequest(regInfo[0]);
 		eb.setEmployeeCode(regInfo[1]);
 		eb.setAccessCode(regInfo[2]);
 		eb.setEmployeeName(regInfo[3]);
 		eb.setEmployeephone(regInfo[4]);
 		eb.setEmployeeLevel(regInfo[5].equals("Manager")?true:false);
-		
+
 		ac = new Access();
 		ac.entrance(eb);
-		
+
 		return this.userInfo;
 	}
-	
+
 	public String[] employeeMod(String[] modInfo) {
 		EmployeeBean eb = new EmployeeBean();
 		Access ac;
-		
+
 		eb.setRequest(modInfo[0]);
 		eb.setEmployeeCode(modInfo[1]);
 		eb.setAccessCode(modInfo[2]);
-		
+
 		ac = new Access();
-		
+
 		ac.entrance(eb);
-		
+
 		return this.userInfo;
 	}
-	
-	public String[] sale(String[] saleInfo) {
-		String[] saleResult = null;
+
+	public String[] saleGoodsInfo(String[] saleInfo) {
+		String[] goodsInfo = null;
 		GoodsBean gb = new GoodsBean();
 		Sale sale;
-		
+
 		gb.setRequest(saleInfo[0]);
 		gb.setGoodsCode(saleInfo[1]);
-		
+
 		sale = new Sale();
-		sale.entrance(gb);
+		if(sale.entrance(gb)) {
+			goodsInfo = new String[5];
+			goodsInfo[0] = gb.getGoodsCode();
+			goodsInfo[1] = gb.getGoodsName();
+			goodsInfo[2] = gb.getGoodsAmount() + "";
+			goodsInfo[3] = gb.getGoodsPrice() + "";
+			goodsInfo[4] = gb.getGoodsExpireDate();
+		}
 		
-		saleResult = new String[3];
-		saleResult[0] = gb.getGoodsCode();
-		saleResult[1] = gb.getGoodsName();
-		saleResult[2] = gb.getGoodsPrice();
+		return goodsInfo;
+	}
+	
+	public void setSaleInfo() {
 		
-		
-		return saleResult;
 	}
 
 }

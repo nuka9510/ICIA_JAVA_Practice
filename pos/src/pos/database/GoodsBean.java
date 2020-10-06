@@ -5,12 +5,11 @@ public class GoodsBean {
 	private String request;
 	private String goodsCode;
 	private String goodsName;
-	private String goodsPrice;
-	private String goodsAmount;
-	private String goodsStock;
-	private String goodsSafetyStock;
+	private int goodsPrice;
+	private int goodsAmount;
+	private int goodsStock;
+	private int goodsSafetyStock;
 	private String goodsExpireDate;
-	
 	public String getRequest() {
 		return request;
 	}
@@ -29,28 +28,28 @@ public class GoodsBean {
 	public void setGoodsName(String goodsName) {
 		this.goodsName = goodsName;
 	}
-	public String getGoodsPrice() {
+	public int getGoodsPrice() {
 		return goodsPrice;
 	}
-	public void setGoodsPrice(String goodsPrice) {
+	public void setGoodsPrice(int goodsPrice) {
 		this.goodsPrice = goodsPrice;
 	}
-	public String getGoodsAmount() {
+	public int getGoodsAmount() {
 		return goodsAmount;
 	}
-	public void setGoodsAmount(String goodsAmount) {
+	public void setGoodsAmount(int goodsAmount) {
 		this.goodsAmount = goodsAmount;
 	}
-	public String getGoodsStock() {
+	public int getGoodsStock() {
 		return goodsStock;
 	}
-	public void setGoodsStock(String goodsStock) {
+	public void setGoodsStock(int goodsStock) {
 		this.goodsStock = goodsStock;
 	}
-	public String getGoodsSafetyStock() {
+	public int getGoodsSafetyStock() {
 		return goodsSafetyStock;
 	}
-	public void setGoodsSafetyStock(String goodsSafetyStock) {
+	public void setGoodsSafetyStock(int goodsSafetyStock) {
 		this.goodsSafetyStock = goodsSafetyStock;
 	}
 	public String getGoodsExpireDate() {
@@ -59,4 +58,6 @@ public class GoodsBean {
 	public void setGoodsExpireDate(String goodsExpireDate) {
 		this.goodsExpireDate = goodsExpireDate;
 	}
+	
+	
 }
