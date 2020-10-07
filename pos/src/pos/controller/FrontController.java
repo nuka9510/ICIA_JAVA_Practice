@@ -1,5 +1,8 @@
 package pos.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class FrontController {
@@ -60,7 +63,7 @@ public class FrontController {
 									break;
 								case "S2":
 									if(this.payment(title, userInfo, goodsList)) {
-										
+										bc.setSaleInfo(saleInfo, goodsList);
 									}
 									break;
 								}
@@ -211,28 +214,45 @@ public class FrontController {
 	}
 
 	private String[] sale(String title, String[] userInfo, String[][] goodsList) {
+		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		Date originalDate;
+		String date = null;
 		String[] saleInfo = new String[2];
 		String select;
 		int totalCost = 0;
 		
+		try {
+			originalDate = originalDateFormat.parse(goodsList[goodsList.length-1][0]);
+			date = dateFormat.format(originalDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
 		for(int i=0;i<goodsList.length;i++) {
-			totalCost += (Integer.parseInt(goodsList[i][2]) * Integer.parseInt(goodsList[i][3]));
+			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
 		}
 
 		saleInfo[0] = "S1";
 		this.print(title + "Sale\n\n[ ");
+		
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
-		this.print("]\n\n--------------------------------------------------\n" + 
+		
+		this.print("]\n\n--------------------------------------------------\n" +
+				date + "\n" + 
+				"--------------------------------------------------\n" +
 				"\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
+		
 		for(int i=0;i<goodsList.length;i++) {
-			for(int j=0;j<goodsList[i].length-1;j++) {
+			for(int j=1;j<goodsList[i].length-1;j++) {
 				this.print("\t" + goodsList[i][j]);
 			}
 			this.print("\n");
 		}
+		
 		this.print("--------------------------------------------------\n\n" +
 				"\t\t\t총 합계 : " + totalCost + "\n" + 
 				"0. 이전화면\n\n1. 다음상품\t\t2. 결제\n" +
@@ -266,7 +286,7 @@ public class FrontController {
 		boolean flag = false;
 
 		for(int i=0;i<preGoodsList.length;i++) {
-			if(preGoodsList[i][0].contentEquals(goodsInfo[0])) {
+			if(preGoodsList[i][1].contentEquals(goodsInfo[1])) {
 				flag = true;
 			}
 		}
@@ -289,13 +309,24 @@ public class FrontController {
 	}
 	
 	private boolean payment(String title, String[] userInfo, String[][] goodsList) {
+		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		Date originalDate;
+		String date = null;
 		boolean result = false;
 		String select;
 		int totalCost = 0;
 		int money;
 		
+		try {
+			originalDate = originalDateFormat.parse(goodsList[goodsList.length-1][0]);
+			date = dateFormat.format(originalDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
 		for(int i=0;i<goodsList.length;i++) {
-			totalCost += (Integer.parseInt(goodsList[i][2]) * Integer.parseInt(goodsList[i][3]));
+			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
 		}
 		
 		this.print(title + "Sale\n\n[ ");
@@ -303,10 +334,12 @@ public class FrontController {
 			this.print(userInfo[i] + " ");
 		}
 		this.print("]\n\n--------------------------------------------------\n" + 
+				date + "\n" + 
+				"--------------------------------------------------\n" +
 				"\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
 		for(int i=0;i<goodsList.length;i++) {
-			for(int j=0;j<goodsList[i].length-1;j++) {
+			for(int j=1;j<goodsList[i].length-1;j++) {
 				this.print("\t" + goodsList[i][j]);
 			}
 			this.print("\n");
@@ -315,6 +348,7 @@ public class FrontController {
 				"\t\t\t총 합계 : " + totalCost + "\n" + 
 				"결제하시겠습니까?(y/n) :");
 		select = sc.next();
+		
 		if(select.equals("y")) {
 			this.print("받은금액 : ");
 			money = sc.nextInt();

@@ -380,5 +380,55 @@ public class DataAccessObject {
 		
 		return result;
 	}
+	
+	public boolean setSaleInfo(int fileIndex, GoodsBean gb) {
+		file = new File(filePath[fileIndex]);
+		StringBuilder record;
+		boolean result = false;
+		
+		try {
+			fw = new FileWriter(file, true);
+			bw = new BufferedWriter(fw);
+			/*
+			for(GoodsBean setgb : gb.getSaleInfoList()) {
+				record = "\n" + setgb.getGoodsCode() + "," + setgb.getGoodsName() + "," + setgb.getGoodsAmount() + "," + 
+						setgb.getGoodsPrice() + "," + setgb.getGoodsExpireDate() + "," + setgb.getSaleDate();
+				bw.write(record);
+				bw.flush();
+			}
+			*/
+			for(int i=0;i<gb.getSaleInfoList().length;i++) {
+				record = new StringBuilder();
+				
+				record.append("\n");
+				record.append(gb.getSaleInfoList()[gb.getSaleInfoList().length-1][0]);
+				record.append(",");
+				for(int j=1;j<gb.getSaleInfoList()[i].length;j++) {
+					record.append(gb.getSaleInfoList()[i][j]);
+					if(j<gb.getSaleInfoList()[i].length-1) {
+						record.append(",");
+					}
+				}
+				
+				bw.write(record.toString());
+				bw.flush();
+			}
+			result = true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(bw != null) {
+					bw.close();
+				}
+				if(fw != null) {
+					fw.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
 
 }

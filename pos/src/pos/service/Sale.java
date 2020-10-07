@@ -17,7 +17,7 @@ public class Sale {
 			result = this.goodsSearch(gb);
 			break;
 		case "S2":
-			result = this.payment();
+			result = this.payment(gb);
 			break;
 		}
 		return result;
@@ -33,8 +33,12 @@ public class Sale {
 		return result;
 	}
 
-	private boolean payment() {
+	private boolean payment(GoodsBean gb) {
 		boolean result = false;
+		DataAccessObject dao = new DataAccessObject();
+		
+		result = dao.setSaleInfo(4, gb);
+		
 		return result;
 	}
 
