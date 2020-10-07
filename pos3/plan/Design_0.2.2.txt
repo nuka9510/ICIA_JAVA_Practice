@@ -1,0 +1,424 @@
+/* POS S/W Development (part. Distribution) */
+
+Part 1. Requirements
+ - 유통기한 초과 여부
+ - 판매 보류 기능
+ - 바코드 입력 방식 외 키보드 입력방식
+ - 재고표시
+ - MIS
+ - 상품판매
+
+Part 2. Job List
+ - POS loading
+ - Log In
+ - Goods Registration, Update
+ - Customer Age
+ - Sales
+ - Expire Date
+ - Stock
+ - 판매보류
+ - 판매취소
+ - 카테고리별 베스트 상품 조회
+ - 일일매출현황
+
+Part 3. Job Processing
+
+ - POS loading : pos.loader.Loader - pos.controller.FrontController ;
+ 
+ /* pos.service.Access */
+ 
+ - Sign In : pos.controller.FrontController [employeeCode, accessCode]
+			- pos.controller.BackController [employeeCode, accessCode]
+			- pos.service.Access [employeeCode, accessCode]
+			- pos.dataBase.employeeData [employeeCode, accessCode] -> [employeeCode, employeeName, employeePhone, employeeLevel]
+			- pos.service.Access [employeeCode, employeeName, employeePhone, employeeLevel, accessTime, log]
+	
+		1.	- pos.controller.BackController [employeeCode, employeeName, employeeLevel, accessTime]
+			- pos.controller.FrontController [employeeCode, employeeName, employeeLevel, accessTime] ;
+		
+		2.	- pos.dataBase.employeeHistory [employeeCode, employeeName, employeePhone, employeeLevel, accessTime, log] ;
+
+ - Sign up : pos.controller.FrontController [employeeCode, accessCode, employeeName, employeePhone, employeeLevel]
+			- pos.controller.BackController [employeeCode, accessCode, employeeName, employeePhone, employeeLevel]
+			- pos.service.Access [employeeCode, accessCode, employeeName, employeePhone, employeeLevel]
+ 			- pos.dataBase.employeeData [employeeCode, accessCode, employeeName, employeePhone, employeeLevel]
+			- pos.controller.FrontController ;
+
+ - SalerModify : pos.controller.FrontController [accessCode, employeePhone]
+				- pos.controller.BackController [accessCode, employeePhone]
+				- pos.service.Access [accessCode, employeePhone]
+ 				- pos.dataBase.employeeData [accessCode, employeePhone]
+				- pos.controller.FrontController ;
+			
+ /* pos.service.Sale */
+ 
+ - Customer Age : pos.controller.FrontController [goodsCode, amount, date, customerAge, state]
+				- pos.controller.BackController [goodsCode, amount, date, customerAge, state]
+				- pos.service.Sale [goodsCode, amount, date, customerAge, state]
+ 		 		- pos.dataBase.goodsInfo [goodsCode, amount, date, customerAge, state] -> [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+				- pos.service.Sale [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+
+		1. 	- pos.controller.BackController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.controller.FrontController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate] ;
+		
+		2. 	- pos.dataBase.saleInfo [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate] ;
+ 
+ - Sales : pos.controller.FrontController [goodsCode, amount, date, customerAge, state]
+			- pos.controller.BackController [goodsCode, amount, date, customerAge, state]
+			- pos.service.Sale [goodsCode, amount, date, customerAge, state]
+			- pos.dataBase.goodsInfo [goodsCode, amount, date, customerAge, state] -> [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.service.Sale [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+
+		1.	- pos.controller.BackController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.controller.FrontController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate] ;
+		
+		2.	- pos.dataBase.saleInfo [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate] ; 
+		
+		3.	- pos.dataBase.goodsInfo [goodsCode, amount],[goodsName, goodsPrice, goodsExpireDate] ; 
+
+ - Cancel : pos.controller.FrontController [date, state]
+			- pos.controller.BackController [date, state]
+			- pos.service.Sale [date, state]
+			- pos.dataBase.saleInfo [date, state] -> [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge]
+			- pos.service.Sale [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge]
+
+		1.	- pos.controller.BackController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate]
+			- pos.controller.FrontController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate] ;
+		
+		2.	- pos.dataBase.saleInfo [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge] ; 
+		
+		3.	- pos.dataBase.goodsInfo  [goodsCode, goodsName, goodsPrice, goodsExpireDate] ; 
+ 
+ - Hold : 1. pos.controller.FrontController  [goodsCode, amount, date, customerAge, state]
+		- pos.controller.BackController [goodsCode, amount, date, customerAge, state]
+		- pos.service.Sale [goodsCode, amount, date, customerAge, state]
+		- pos.dataBase.saleInfo [goodsCode, amount, date, customerAge, state]
+ 		- pos.controller.FrontController ;
+ 			
+ 	2. pos.controller.FrontController [date, state]
+		- pos.controller.BackController [date, state]
+		- pos.service.Sale [date, state]
+		- pos.dataBase.saleInfo [date, state] -> [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate]
+	 	- pos.service.Sale [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge]
+			
+	2-1.	- pos.controller.BackController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate]
+		- pos.controller.FrontController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate] ;
+ 
+ 	2-2.	- pos.dataBase.saleInfo [date, state],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge] ; 
+ 
+ 	2-3.	- pos.dataBase.goodsInfo [goodsCode, goodsName, goodsPrice, goodsExpireDate] ; 
+
+ - Expire Date.01 : pos.controller.FrontController [goodsCode, amount, date, customerAge, state]
+			- pos.controller.BackController [goodsCode, amount, date, customerAge, state]
+			- pos.service.Sale [goodsCode, amount, date, customerAge, state]
+			- pos.database.goodsInfo [goodsCode, amount, date, customerAge, state] -> [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.service.Sale [goodsCode, amount, date, customerAge, state],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.controller.BackController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate]
+			- pos.controller.FrontController [goodsCode, amount, date],[goodsName, goodsPrice, goodsExpireDate] ;
+
+ /* pos.service.Management */
+
+ - Stock : pos.controller.FrontController [goodsCode]
+		- pos.controller.BackController [goodsCode]
+		- pos.service.Management [goodsCode]
+		- pos.database.goodsInfo [goodsCode] -> [goodsCode],[goodsName, goodsStock, goodsSafetyStock]
+ 		- pos.service.Management [goodsCode],[goodsName, goodsStock, goodsSafetyStock]
+		- pos.controller.BackController [goodsCode],[goodsName, goodsStock, goodsSafetyStock]
+		- pos.controller.FrontController [goodsCode],[goodsName, goodsStock, goodsSafetyStock] ;
+ 
+ - Goods Registration, Update : pos.controller.FrontController [date, goodsCode, goodsName, goodsPrice, amount, goodsExpireDate, goodsSafetyStock]
+				- pos.controller.BackController [date, goodsCode, goodsName, goodsPrice, amount, goodsExpireDate, goodsSafetyStock]
+				- pos.service.Management [date, goodsCode, goodsName, goodsPrice, amount, goodsExpireDate, goodsSafetyStock]
+ 				- pos.dataBase.goodsInfo [date, goodsCode, goodsName, goodsPrice, amount, goodsExpireDate, goodsSafetyStock]
+ 				- pos.controller.FrontController ;
+ 
+ - 카테고리별 베스트 상품 조회 : pos.controller.FrontController [category]
+					- pos.controller.BackController [category]
+					- pos.service.Management [category]
+					- pos.dataBase.saleInfo [category] -> [goodsCode, goodsName, goodsPrice, goodsStock, goodsSafetyStock]
+ 					- pos.service.Management [goodsCode, goodsName, goodsPrice, goodsStock, goodsSafetyStock]
+ 					- pos.controller.BackController [goodsCode, goodsName, goodsPrice, goodsStock, goodsSafetyStock]
+			`		- pos.controller.FrontController [goodsCode, goodsName, goodsPrice, goodsStock, goodsSafetyStock] ;
+ 
+ - 일일매출현황 : pos.controller.FrontController [date]
+			- pos.controller.BackController [date]
+			- pos.service.Management [date]
+			- pos.dataBase.saleInfo [date] -> [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge, state]
+			- pos.service.Management [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge, state]
+			- pos.controller.BackController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge, state]
+			- pos.controller.FrontController [date],[goodsCode, goodsName, amount, goodsPrice, goodsExpireDate, customerAge, state] ;
+
+ - Expire Date.02 : pos.controller.FrontController [goodsCode]
+			- pos.controller.BackController [goodsCode]
+			- pos.service.Management [goodsCode]
+			- pos.database.goodsInfo [goodsCode] -> [goodsCode],[date, goodsName, goodsPrice, amount, goodsExpireDate, goodsStock, goodsSafetyStock]
+			- pos.service.Management [goodsCode],[date, goodsName, goodsPrice, amount, goodsExpireDate, goodsStock, goodsSafetyStock]
+			- pos.controller.BackController [goodsCode],[date, goodsName, goodsPrice, amount, goodsExpireDate, goodsStock, goodsSafetyStock]
+			- pos.controller.FrontController [goodsCode],[date, goodsName, goodsPrice, amount, goodsExpireDate, goodsStock, goodsSafetyStock] ;
+
+Part 4. Client Design
+<초기화면>
+	- Title
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+						 		by Maginot
+
+	--------------------------------------------------
+
+	[Log In]  --> 현재 화면의 타이틀
+ 
+	 [Employee Code] : _
+	 [Access Code]   : _
+
+
+--> Access Pass
+	--------------------------------------------------
+	
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+	 [서비스 선택]
+ 
+	  1. 상품판매			2. 상품반품
+ 	 3. 직원관리*			4. 영업관리*   --> Manage인 경우만
+
+	 ________________________________ Select : _
+ 
+<상품판매>
+
+--> 상품판매화면1
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+ 	[상품 판매]
+ 
+	  상품코드 : 1001    --> 0 : 이전화면
+  
+
+--> 상품판매화면2
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+ 	[상품 판매]
+ 
+	--------------------------------------------------
+	결재번호		상품코드			상품명	수량		단가
+ 	--------------------------------------------------
+		01		1001			새우깡	1		1500
+ 	--------------------------------------------------
+ 	
+										합계		1500
+                           
+	  진행상태 : _        --> P:결제 B:보류                          
+	  상품코드 : 1002
+	  
+--> 상품판매화면3
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+	
+	 [상품 판매]
+
+ 	--------------------------------------------------
+ 	결재일자 : YYYY.MM.DD hh:mm:ss
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+ 	--------------------------------------------------
+		01	1001	새우깡		1		1500	1500
+		02	1002	감자깡		1		2000	2000
+	--------------------------------------------------
+	
+									총 결재금액	3500
+	                           
+	  진행상태 : P                          
+	  받은금액 : 5000  <<-- 입력
+	  거스름돈 : 1500  결제하시겠습니까(y/n)? : _
+
+<상품반품>
+
+--> 상품반품화면1
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+ 	[상품 반품]
+ 
+	  주문코드 : _______ --> 이전화면(C)
+	  
+--> 상품반품화면2
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+	 
+ 	--------------------------------------------------
+ 	결재일자 : YYYY.MM.DD hh:mm:ss
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+ 	--------------------------------------------------
+		01	1001	새우깡		1		1500	1500
+		02	1002	감자깡		1		2000	2000
+	--------------------------------------------------
+								
+									총 결재금액	3500
+
+	1. 전체품목 취소 (T)    2.선택품목 취소(S)     3. 이전화면(C)
+	기능선택 : _
+
+--> 상품반품화면3_T_1
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+	 
+ 	--------------------------------------------------
+ 	결재일자 : YYYY.MM.DD hh:mm:ss
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+ 	--------------------------------------------------
+		01	1001	새우깡		1		1500	1500
+		02	1002	감자깡		1		2000	2000
+	--------------------------------------------------
+								
+									총 결재금액	3500
+	
+				______________ 반품하시겠습니까(y/n)? : _
+								
+--> 상품반품화면3_T_2
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+	 [상품 반품]
+
+ 	--------------------------------------------------
+ 	반품일자 : YYYY.MM.DD hh:mm:ss	 
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+ 	--------------------------------------------------
+		01	1001	새우깡		-1		1500	1500
+		02	1002	감자깡		-1		2000	2000
+	--------------------------------------------------
+									
+									환불금액		3500
+							
+									총 결재금액	0
+	
+--> 상품반품화면3_S_1
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+
+	--------------------------------------------------
+ 	결재일자 : YYYY.MM.DD hh:mm:ss	 
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+	--------------------------------------------------
+		01	1001	새우깡		1		1500	1500
+		02	1002	감자깡		10		2000	20000
+	--------------------------------------------------
+									
+									총 결재금액	21500
+	결재번호 : ____ 반품수량 : _
+	다음품목 (N) 반품 (PB)
+	기능선택 : _
+
+--> 상품반품화면3_S_2
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+	
+	[상품 반품]
+	
+ 	--------------------------------------------------
+ 	반품일자 : YYYY.MM.DD hh:mm:ss	
+ 	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+	--------------------------------------------------
+		02	1002	감자깡		-1		2000	2000	
+	--------------------------------------------------
+									
+									환불금액		2000
+				
+				______________ 반품하시겠습니까(y/n)? : _
+
+--> 상품반품화면3_S_3
+	--------------------------------------------------
+
+				Point Of Sales System v1.0
+		
+								 by Maginot
+
+	--------------------------------------------------
+ 
+	--------------------------------------------------
+ 	결재일자 : YYYY.MM.DD hh:mm:ss	 
+	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+	--------------------------------------------------
+		01	1001	새우깡		1		1500	1500
+		02	1002	감자깡		10		2000	20000
+	--------------------------------------------------
+									
+									결재금액		21500
+	
+	[상품 반품]
+	
+ 	--------------------------------------------------
+ 	반품일자 : YYYY.MM.DD hh:mm:ss	
+ 	--------------------------------------------------
+	결재번호	상품코드	상품명		수량		단가		금액
+	--------------------------------------------------
+		02	1002	감자깡		-1		2000	2000	
+	--------------------------------------------------
+									
+									환불금액		2000
+							
+									총 결재금액	9500
+
+Part 5. Service Design
+
+Part 6. Test Data Collection
+
+Part 7. Coding & Debugging

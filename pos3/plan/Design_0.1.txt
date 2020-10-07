@@ -1,0 +1,35 @@
+2. txt끼리 데이터 교환을 하냐
+
+goods 
+history 
+saler 
+saleInfo 
+
+
+Part 3. Job Processing
+
+ - POS loading         ==> loader --> Loader.java 
+
+ - Log In         ==> services --> Access.java? --> history, saler
+일하는 사람 수에 맞게 로그인 했을 시, 그 기록은 history // 판매자 정보는 saler (데이터 주고받기) 
+
+ - Goods Registration, Update   ==> services --> Managements.java --> goods
+
+ - Customer Age         ==> services --> Sales.java --> saleinfo
+
+ - Sales         ==> services --> Sales.java --> saleinfo, goods 
+
+
+ - Expire Date         ==> services --> Managements 3, Sales 1 --> goods, saleinfo
+판매를 했을 때 판매기록은 goods, 고객 정보는 saleInfo
+
+ - Stock         ==> services --> Managements.java --> goods 
+
+ - 판매보류         ==> services --> Sales.java --> saleinfo, goods 
+
+ - 판매취소         ==> services --> Sales.java --> saleinfo, goods
+판매를 했을 때 기록이 history, 취소를 하려할 때 history에서 끌어와 환불 후, goods
+
+ - 카테고리별 베스트 상품 조회   ==> services --> Managements.java --> saleinfo
+
+ - 일일매출현황         ==> services --> Managements.java --> saleinfo
