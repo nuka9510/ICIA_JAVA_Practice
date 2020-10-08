@@ -19,6 +19,9 @@ public class Sale {
 		case "S2":
 			result = this.payment(gb);
 			break;
+		case "S3":
+			result = this.getRefundList(gb);
+			break;
 		}
 		return result;
 	}
@@ -38,6 +41,15 @@ public class Sale {
 		DataAccessObject dao = new DataAccessObject();
 		
 		result = dao.setSaleInfo(4, gb);
+		
+		return result;
+	}
+	
+	private boolean getRefundList(GoodsBean gb) {
+		boolean result = false;
+		DataAccessObject dao = new DataAccessObject();
+		
+		result = dao.getRefundList(4, gb);
 		
 		return result;
 	}

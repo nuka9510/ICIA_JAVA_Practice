@@ -237,7 +237,7 @@ public class DataAccessObject {
 
 			bw.write("\n" + sb.toString());
 			bw.flush();
-			
+
 			result = true;
 
 		} catch (Exception e) {
@@ -254,40 +254,40 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<EmployeeBean> getEmployeesData(int fileIndex) {
 		file = new File(filePath[fileIndex]);
 		ArrayList<EmployeeBean> employeeList = new ArrayList<EmployeeBean>();
 		EmployeeBean eb;
 		String record;
 		String[] recordArr;
-		
+
 		try {
 			fr = new FileReader(file);
 			br = new BufferedReader(fr);
-			
+
 			while(true) {
 				record = br.readLine();
 				if(record == null) {
 					break;
 				}
 				recordArr = record.split(",");
-				
+
 				eb = new EmployeeBean();
-				
+
 				eb.setEmployeeCode(recordArr[0]);
 				eb.setAccessCode(recordArr[1]);
 				eb.setEmployeeName(recordArr[2]);
 				eb.setEmployeephone(recordArr[3]);
 				eb.setEmployeeLevel(recordArr[4].equals("Manager")?true:false);
-					
+
 				employeeList.add(eb);
-				
+
 			}
-			
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -304,16 +304,16 @@ public class DataAccessObject {
 		}
 		return employeeList;
 	}
-	
+
 	public boolean setEmployeeMod(int fileIndex, ArrayList<EmployeeBean> employeeList) {
 		boolean result = false;
 		file = new File(filePath[fileIndex]);
 		String record;
-		
+
 		try {
 			fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
-			
+
 			for(EmployeeBean eb : employeeList) {
 				record = eb.getEmployeeCode() + "," + eb.getAccessCode() + "," + eb.getEmployeeName() + "," +
 						eb.getEmployeephone() + "," + (eb.isEmployeeLevel()?"Manager":"Mate") + "\n";
@@ -354,12 +354,25 @@ public class DataAccessObject {
 					break;
 				}
 				recordArr = record.split(",");
+
 				if(gb.getGoodsCode().equals(recordArr[0])) {
-					result = true;
 					gb.setGoodsName(recordArr[1]);
 					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
 					gb.setGoodsExpireDate(recordArr[3]);
-					gb.setGoodsAmount(1);
+					if(gb.getSaleInfoList() != null) {
+						for(int i=0;i<gb.getSaleInfoList().length;i++) {
+							if(gb.getGoodsCode().equals(gb.getSaleInfoList()[i][1])) {
+								gb.setGoodsAmount(Integer.parseInt(gb.getSaleInfoList()[i][3])+1);
+								break;
+							}else {
+								gb.setGoodsAmount(1);
+							}
+						}
+					}else {
+						gb.setGoodsAmount(1);
+					}
+
+					result = true;
 					break;
 				}
 			}
@@ -377,15 +390,15 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public boolean setSaleInfo(int fileIndex, GoodsBean gb) {
 		file = new File(filePath[fileIndex]);
 		StringBuilder record;
 		boolean result = false;
-		
+
 		try {
 			fw = new FileWriter(file, true);
 			bw = new BufferedWriter(fw);
@@ -396,10 +409,10 @@ public class DataAccessObject {
 				bw.write(record);
 				bw.flush();
 			}
-			*/
+			 */
 			for(int i=0;i<gb.getSaleInfoList().length;i++) {
 				record = new StringBuilder();
-				
+
 				record.append("\n");
 				record.append(gb.getSaleInfoList()[gb.getSaleInfoList().length-1][0]);
 				record.append(",");
@@ -409,7 +422,7 @@ public class DataAccessObject {
 						record.append(",");
 					}
 				}
-				
+
 				bw.write(record.toString());
 				bw.flush();
 			}
@@ -423,6 +436,53 @@ public class DataAccessObject {
 				}
 				if(fw != null) {
 					fw.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public boolean getRefundList(int fileIndex, GoodsBean gb) {
+		boolean result = false;
+		file = new File(filePath[fileIndex]);
+		ArrayList<GoodsBean> refundList = new ArrayList<GoodsBean>();
+		GoodsBean recordBean;
+		String[] recordArr;
+		String record;
+
+		try {
+			fr = new FileReader(file);
+			br =  new BufferedReader(fr);
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				recordArr = record.split(",");
+				if(recordArr[0].equals(gb.getSaleDate())) {
+					recordBean = new GoodsBean();
+					result = true;
+					recordBean.setSaleDate(recordArr[0]);
+					recordBean.setGoodsCode(recordArr[1]);
+					recordBean.setGoodsName(recordArr[2]);
+					recordBean.setGoodsAmount(Integer.parseInt(recordArr[3]));
+					recordBean.setGoodsPrice(Integer.parseInt(recordArr[4]));
+					recordBean.setGoodsExpireDate(recordArr[5]);
+					refundList.add(recordBean);
+				}
+			}
+			gb.setRefundList(refundList);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
 				}
 			}catch(Exception e) {
 				e.printStackTrace();

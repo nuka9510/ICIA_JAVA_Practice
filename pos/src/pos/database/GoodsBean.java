@@ -1,6 +1,6 @@
 package pos.database;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class GoodsBean {
 
@@ -14,6 +14,7 @@ public class GoodsBean {
 	private String goodsExpireDate;
 	private String saleDate;
 	private String[][] saleInfoList;
+	private ArrayList<GoodsBean> refundList;
 	
 	public String getRequest() {
 		return request;
@@ -63,14 +64,6 @@ public class GoodsBean {
 	public void setGoodsExpireDate(String goodsExpireDate) {
 		this.goodsExpireDate = goodsExpireDate;
 	}
-	/*
-	public ArrayList<GoodsBean> getSaleInfoList() {
-		return saleInfoList;
-	}
-	public void setSaleInfoList(ArrayList<GoodsBean> saleInfoList) {
-		this.saleInfoList = saleInfoList;
-	}
-	*/
 	public String getSaleDate() {
 		return saleDate;
 	}
@@ -82,6 +75,12 @@ public class GoodsBean {
 	}
 	public void setSaleInfoList(String[][] saleInfoList) {
 		this.saleInfoList = saleInfoList;
+	}
+	public ArrayList<GoodsBean> getRefundList() {
+		return refundList;
+	}
+	public void setRefundList(ArrayList<GoodsBean> refundList) {
+		this.refundList = refundList;
 	}
 	
 	

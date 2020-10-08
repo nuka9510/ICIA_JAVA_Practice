@@ -16,9 +16,11 @@ public class FrontController {
 
 	private void init(String title) {
 		String[][] goodsList = null;
+		String[][] refundList;
+		String[] userInfo = null;
 		String[] saleInfo;
 		String[] goodsInfo;
-		String[] userInfo = null;
+		String[] refundInfo;
 		String selectService;
 		String empoyeeManage;
 		BackController bc = new BackController();
@@ -41,39 +43,50 @@ public class FrontController {
 					case "1":
 						while(true) {
 							saleInfo = this.sale(title, userInfo);
-							
+
 							if(saleInfo == null) {
 								break;
 							}
-							
-							goodsInfo = bc.saleGoodsInfo(saleInfo);
-							goodsList = this.makeList(goodsInfo);
 
-							while(true) {
-								saleInfo = this.sale(title, userInfo, goodsList);
-								
-								if(saleInfo == null) {
-									break;
-								}
-								
-								switch(saleInfo[0]) {
-								case "S1":
-									goodsInfo = bc.saleGoodsInfo(saleInfo);
-									goodsList = this.makeList(goodsInfo, goodsList);
-									break;
-								case "S2":
-									if(this.payment(title, userInfo, goodsList)) {
-										bc.setSaleInfo(saleInfo, goodsList);
+							goodsInfo = bc.saleGoodsInfo(saleInfo, goodsList);
+							if(goodsInfo != null) {
+								if(this.isExpireDate(goodsInfo)) {
+									goodsList = this.makeList(goodsInfo);
+
+									while(true) {
+										saleInfo = this.sale(title, userInfo, goodsList);
+
+										if(saleInfo == null) {
+											break;
+										}
+
+										switch(saleInfo[0]) {
+										case "S1":
+											goodsInfo = bc.saleGoodsInfo(saleInfo, goodsList);
+											if(goodsInfo != null) {
+												if(this.isExpireDate(goodsInfo)) {
+													goodsList = this.makeList(goodsInfo, goodsList);
+												}
+											}
+											break;
+										case "S2":
+											if(this.payment(title, userInfo, goodsList)) {
+												bc.setSaleInfo(saleInfo, goodsList);
+											}
+											break;
+										}
+										if(!saleInfo[0].equals("S1")) {
+											break;
+										}
 									}
-									break;
-								}
-								if(!saleInfo[0].equals("S1")) {
-									break;
 								}
 							}
 						}
 						break;
 					case "2":
+						refundInfo = this.refundFirstPhase(title, userInfo);
+						refundList = bc.getRefundList(refundInfo);
+						this.refundSecondPhase(title, userInfo, refundList);
 						break;
 					case "3":
 
@@ -205,7 +218,7 @@ public class FrontController {
 		this.print("]\n\n0. 이전화면");
 		this.print("\n\n상품코드 : ");
 		saleInfo[1] = sc.next();
-		
+
 		if(saleInfo[1].equals("0")) {
 			saleInfo = null;
 		}
@@ -221,44 +234,44 @@ public class FrontController {
 		String[] saleInfo = new String[2];
 		String select;
 		int totalCost = 0;
-		
+
 		try {
 			originalDate = originalDateFormat.parse(goodsList[goodsList.length-1][0]);
 			date = dateFormat.format(originalDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		for(int i=0;i<goodsList.length;i++) {
 			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
 		}
 
 		saleInfo[0] = "S1";
 		this.print(title + "Sale\n\n[ ");
-		
+
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
-		
+
 		this.print("]\n\n--------------------------------------------------\n" +
 				date + "\n" + 
 				"--------------------------------------------------\n" +
 				"\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
-		
+
 		for(int i=0;i<goodsList.length;i++) {
 			for(int j=1;j<goodsList[i].length-1;j++) {
 				this.print("\t" + goodsList[i][j]);
 			}
 			this.print("\n");
 		}
-		
+
 		this.print("--------------------------------------------------\n\n" +
 				"\t\t\t총 합계 : " + totalCost + "\n" + 
 				"0. 이전화면\n\n1. 다음상품\t\t2. 결제\n" +
 				"\n\n________________________________ Select : ");
 		select = sc.next();
-		
+
 		if(select.equals("0")) {
 			saleInfo = null;
 		} else {
@@ -269,7 +282,7 @@ public class FrontController {
 				saleInfo[1] = sc.next();
 			}
 		}
-		
+
 		return saleInfo;
 	}
 
@@ -295,11 +308,14 @@ public class FrontController {
 		} else {
 			goodsList = new String[preGoodsList.length+1][];
 		}
-		
-		
+
+
 		for(int i=0;i<goodsList.length;i++) {
 			if(i<preGoodsList.length) {
 				goodsList[i] = preGoodsList[i];
+				if(goodsInfo[1].equals(preGoodsList[i][1])) {
+					goodsList[i][3] = goodsInfo[3];
+				}
 			} else {
 				goodsList[i] = goodsInfo;
 			}
@@ -307,7 +323,17 @@ public class FrontController {
 
 		return goodsList;
 	}
-	
+
+	private boolean isExpireDate(String[] goodsInfo) {
+		boolean result = true;
+
+		if(Integer.parseInt(goodsInfo[5]) < Integer.parseInt(goodsInfo[0].substring(0, 8))) {
+			result = false;
+		}
+
+		return result;
+	}
+
 	private boolean payment(String title, String[] userInfo, String[][] goodsList) {
 		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -317,18 +343,18 @@ public class FrontController {
 		String select;
 		int totalCost = 0;
 		int money;
-		
+
 		try {
 			originalDate = originalDateFormat.parse(goodsList[goodsList.length-1][0]);
 			date = dateFormat.format(originalDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		for(int i=0;i<goodsList.length;i++) {
 			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
 		}
-		
+
 		this.print(title + "Sale\n\n[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
@@ -348,7 +374,7 @@ public class FrontController {
 				"\t\t\t총 합계 : " + totalCost + "\n" + 
 				"결제하시겠습니까?(y/n) :");
 		select = sc.next();
-		
+
 		if(select.equals("y")) {
 			this.print("받은금액 : ");
 			money = sc.nextInt();
@@ -360,8 +386,83 @@ public class FrontController {
 				result = true;
 			}
 		}
-		
+
 		return result;
+	}
+	
+	private String[] refundFirstPhase(String title, String[] userInfo) {
+		String[] result = new String[2];
+		result[0] = "S3";
+		this.print(title + "Refund\n\n[ ");
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		}
+		this.print("]\n\n0. 이전화면"); 
+		this.print("\n\n주문코드________ : ");
+		result[1] = sc.next();
+		if(result[1].equals("0")) {
+			result = null;
+		}
+		return result;
+	}
+	
+	private void refundSecondPhase(String title, String[] userInfo, String[][] refundList) {
+		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		Date originalDate;
+		String date = null;
+		String[] saleInfo = new String[2];
+		String select;
+		int totalCost = 0;
+
+		try {
+			originalDate = originalDateFormat.parse(refundList[refundList.length-1][0]);
+			date = dateFormat.format(originalDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		for(int i=0;i<refundList.length;i++) {
+			totalCost += (Integer.parseInt(refundList[i][3]) * Integer.parseInt(refundList[i][4]));
+		}
+
+		saleInfo[0] = "S1";
+		this.print(title + "Refund\n\n[ ");
+
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		}
+
+		this.print("]\n\n--------------------------------------------------\n" +
+				date + "\n" + 
+				"--------------------------------------------------\n" +
+				"\t상품코드\t상품명\t수량\t단가\n" + 
+				"--------------------------------------------------\n"); 
+
+		for(int i=0;i<refundList.length;i++) {
+			for(int j=1;j<refundList[i].length-1;j++) {
+				this.print("\t" + refundList[i][j]);
+			}
+			this.print("\n");
+		}
+
+		this.print("--------------------------------------------------\n\n" +
+				"\t\t\t총 합계 : " + totalCost + "\n" + 
+				"0. 이전화면\n\n1. 전 품목\t\t2. 선택 품목" +
+				"\n\n________________________________ Select : ");
+		select = sc.next();
+
+		if(select.equals("0")) {
+			saleInfo = null;
+		} else {
+			if(select.equals("2")) {
+				saleInfo[0] = null;
+			} else {
+				this.print("\n\n주문코드________ : ");
+				saleInfo[1] = sc.next();
+			}
+		}
+
 	}
 
 	private String title() {
