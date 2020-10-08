@@ -111,4 +111,29 @@ public class BackController {
 		sale.entrance(gb);
 	}
 	
+	public String[][] getRefundList(String[] refundInfo) {
+		GoodsBean gb = new GoodsBean();
+		Sale sale;
+		String[][] refundList = null;
+		
+		gb.setRequest(refundInfo[0]);
+		gb.setSaleDate(refundInfo[1]);
+		
+		sale = new Sale();
+			
+		if(sale.entrance(gb)) {
+			refundList = new String[gb.getRefundList().size()][6];
+			for(int i=0;i<refundList.length;i++) {
+				refundList[i][0] = gb.getRefundList().get(i).getSaleDate();
+				refundList[i][1] = gb.getRefundList().get(i).getGoodsCode();
+				refundList[i][2] = gb.getRefundList().get(i).getGoodsName();
+				refundList[i][3] = gb.getRefundList().get(i).getGoodsAmount() + "";
+				refundList[i][4] = gb.getRefundList().get(i).getGoodsPrice() + "";
+				refundList[i][5] = gb.getRefundList().get(i).getGoodsExpireDate();
+			}
+		}
+		
+		return refundList;
+	}
+	
 }

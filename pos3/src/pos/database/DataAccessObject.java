@@ -435,4 +435,53 @@ public class DataAccessObject {
 		return result;
 	}
 
+	public boolean getRefundList(int fileIndex, GoodsBean gb) {
+		boolean result = false;
+		file  = new File(filePath[fileIndex]);	
+		ArrayList<GoodsBean> refundList = new ArrayList<GoodsBean>();
+		String record;
+		String[] recordArr;
+		GoodsBean recordBean;
+
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				recordArr = record.split(",");
+				if(gb.getSaleDate().equals(recordArr[0])) {
+					result = true;
+					recordBean = new GoodsBean();
+					recordBean.setSaleDate(recordArr[0]);
+					recordBean.setGoodsCode(recordArr[1]);
+					recordBean.setGoodsName(recordArr[2]);
+					recordBean.setGoodsAmount(Integer.parseInt(recordArr[3]));
+					recordBean.setGoodsPrice(Integer.parseInt(recordArr[4]));
+					recordBean.setGoodsExpireDate(recordArr[5]);
+					refundList.add(recordBean);
+				}
+			}
+			
+			gb.setRefundList(refundList);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
 }
