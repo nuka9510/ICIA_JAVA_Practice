@@ -15,6 +15,7 @@ public class GoodsBean {
 	private String saleDate;
 	private String[][] saleInfoList;
 	private ArrayList<GoodsBean> refundList;
+	private String state;
 	
 	public String getRequest() {
 		return request;
@@ -81,6 +82,12 @@ public class GoodsBean {
 	}
 	public void setRefundList(ArrayList<GoodsBean> refundList) {
 		this.refundList = refundList;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 	
 	

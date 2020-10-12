@@ -197,7 +197,7 @@ public class DataAccessObject {
 			sb.append(",");
 			sb.append(eb.getRequest().equals("A1")?"1":"-1");
 
-			bw.write("\n" + sb.toString());
+			bw.write(sb.toString() + "\n");
 			bw.flush();
 
 		} catch (Exception e) {
@@ -235,7 +235,7 @@ public class DataAccessObject {
 			sb.append(",");
 			sb.append(eb.isEmployeeLevel()?"Manager":"Mate");
 
-			bw.write("\n" + sb.toString());
+			bw.write(sb.toString() + "\n");
 			bw.flush();
 
 			result = true;
@@ -316,8 +316,8 @@ public class DataAccessObject {
 
 			for(EmployeeBean eb : employeeList) {
 				record = eb.getEmployeeCode() + "," + eb.getAccessCode() + "," + eb.getEmployeeName() + "," +
-						eb.getEmployeephone() + "," + (eb.isEmployeeLevel()?"Manager":"Mate") + "\n";
-				bw.write(record);
+						eb.getEmployeephone() + "," + (eb.isEmployeeLevel()?"Manager":"Mate");
+				bw.write(record + "\n");
 				bw.flush();
 				result = true;
 			}
@@ -413,7 +413,6 @@ public class DataAccessObject {
 			for(int i=0;i<gb.getSaleInfoList().length;i++) {
 				record = new StringBuilder();
 
-				record.append("\n");
 				record.append(gb.getSaleInfoList()[gb.getSaleInfoList().length-1][0]);
 				record.append(",");
 				for(int j=1;j<gb.getSaleInfoList()[i].length;j++) {
@@ -422,8 +421,9 @@ public class DataAccessObject {
 						record.append(",");
 					}
 				}
+				//record.append(gb.getState());
 
-				bw.write(record.toString());
+				bw.write(record.toString() + "\n");
 				bw.flush();
 			}
 			result = true;
@@ -443,6 +443,52 @@ public class DataAccessObject {
 		}
 		return result;
 	}
+	
+	public ArrayList<GoodsBean> getSaleInfo(int fileIndex) {
+		file = new File(filePath[fileIndex]);
+		ArrayList<GoodsBean> saleInfo = new ArrayList<GoodsBean>();
+		GoodsBean gb;
+		String record;
+		String[] recordArr;
+		
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+			
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				gb = new GoodsBean();
+				
+				recordArr = record.split(",");
+				gb.setSaleDate(recordArr[0]);
+				gb.setGoodsCode(recordArr[1]);
+				gb.setGoodsName(recordArr[2]);
+				gb.setGoodsAmount(Integer.parseInt(recordArr[3]));
+				gb.setGoodsPrice(Integer.parseInt(recordArr[4]));
+				gb.setGoodsExpireDate(recordArr[5]);
+				
+				saleInfo.add(gb);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return saleInfo;
+	}
+	
 
 	public boolean getRefundList(int fileIndex, GoodsBean gb) {
 		boolean result = false;
@@ -489,6 +535,75 @@ public class DataAccessObject {
 			}
 		}
 		return result;
+	}
+	
+	public void setRefundList(int fileIndex, ArrayList<GoodsBean> saleInfo) {
+		file = new File(filePath[fileIndex]);
+		String record;
+		
+		try {
+			fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+			
+			for(GoodsBean gb : saleInfo) {
+				record = gb.getSaleDate() + "," + gb.getGoodsCode() + "," + gb.getGoodsName() + "," + gb.getGoodsAmount() + "," +
+						gb.getGoodsPrice() + "," + gb.getGoodsExpireDate();
+			bw.write(record + "\n");
+			bw.flush();
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fw != null) {
+					fw.close();
+				}
+				if(bw != null) {
+					bw.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setGoodsInfo(int fileIndex, GoodsBean gb) {
+		file = new File(filePath[fileIndex]);
+		StringBuilder record;
+
+		try {
+			fw = new FileWriter(file, true);
+			bw = new BufferedWriter(fw);
+			record = new StringBuilder();
+
+			record.append(gb.getGoodsCode());
+			record.append(",");
+			record.append(gb.getGoodsName());
+			record.append(",");
+			record.append(gb.getGoodsPrice());
+			record.append(",");
+			record.append(gb.getGoodsExpireDate());
+			record.append(",");
+			record.append(gb.getGoodsStock());
+			record.append(",");
+			record.append(gb.getGoodsSafetyStock());
+
+			bw.write(record.toString() + "\n");
+			bw.flush();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fw != null) {
+					fw.close();
+				}
+				if(bw != null) {
+					bw.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import pos.database.EmployeeBean;
 import pos.database.GoodsBean;
 import pos.service.Access;
+import pos.service.Management;
 import pos.service.Sale;
 
 public class BackController {
@@ -104,6 +105,7 @@ public class BackController {
 		//GoodsBean gbList;
 		
 		gb.setRequest(saleInfo[0]);
+		gb.setState(saleInfo[1]);
 		/*
 		for(int i=0;i<goodsList.length;i++) {
 			gbList = new GoodsBean();
@@ -148,6 +150,32 @@ public class BackController {
 		}
 		
 		return refundList;
+	}
+	
+	public void setRefundList(String[] refundInfo, String[][] goodsList) {
+		 GoodsBean gb = new GoodsBean();
+		 Sale sale = new Sale();
+		 
+		 gb.setRequest(refundInfo[0]);
+		 gb.setSaleInfoList(goodsList);
+		 
+		 sale.entrance(gb);
+	}
+	
+	public void goodsReg(String[] goodsInfo) {
+		GoodsBean gb = new GoodsBean();
+		Management manage;
+		
+		gb.setRequest(goodsInfo[0]);
+		gb.setGoodsCode(goodsInfo[1]);
+		gb.setGoodsName(goodsInfo[2]);
+		gb.setGoodsPrice(Integer.parseInt(goodsInfo[3]));
+		gb.setGoodsExpireDate(goodsInfo[4]);
+		gb.setGoodsStock(Integer.parseInt(goodsInfo[5]));
+		gb.setGoodsSafetyStock(Integer.parseInt(goodsInfo[6]));
+		
+		manage = new Management();
+		manage.entrance(gb);
 	}
 
 }

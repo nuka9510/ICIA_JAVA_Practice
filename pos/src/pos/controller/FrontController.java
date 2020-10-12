@@ -23,6 +23,7 @@ public class FrontController {
 		String[] refundInfo;
 		String selectService;
 		String empoyeeManage;
+		String salesManage;
 		BackController bc = new BackController();
 
 		while(true) {
@@ -86,7 +87,24 @@ public class FrontController {
 					case "2":
 						refundInfo = this.refundFirstPhase(title, userInfo);
 						refundList = bc.getRefundList(refundInfo);
-						this.refundSecondPhase(title, userInfo, refundList);
+						refundInfo = this.refundSecondPhase(title, userInfo, refundList);
+
+						switch(refundInfo[0]) {
+						case "S4":
+							bc.setRefundList(refundInfo, refundList);
+							break;
+						case "S5":
+							goodsList = this.makeRefundList(refundInfo, refundList);
+							while(true) {
+								refundInfo = this.refundSecondPhase(title, userInfo, refundList, goodsList);
+								if(refundInfo[0].equals("S6")) {
+									bc.setRefundList(refundInfo, goodsList);
+									break;
+								}
+								goodsList = this.makeRefundList(refundInfo, refundList, goodsList);
+							}
+							break;
+						}
 						break;
 					case "3":
 
@@ -112,6 +130,13 @@ public class FrontController {
 							}
 						}
 					case "4":
+						salesManage = this.salesManage(title, userInfo);
+						switch(salesManage) {
+						case "1":
+							goodsInfo = this.goodsReg(title, userInfo);
+							bc.goodsReg(goodsInfo);
+							break;
+						}
 						break;
 					default :
 						continue;
@@ -256,10 +281,11 @@ public class FrontController {
 		this.print("]\n\n--------------------------------------------------\n" +
 				date + "\n" + 
 				"--------------------------------------------------\n" +
-				"\t상품코드\t상품명\t수량\t단가\n" + 
+				"결제번호\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
 
 		for(int i=0;i<goodsList.length;i++) {
+			this.print((i+1)+"");
 			for(int j=1;j<goodsList[i].length-1;j++) {
 				this.print("\t" + goodsList[i][j]);
 			}
@@ -277,6 +303,7 @@ public class FrontController {
 		} else {
 			if(select.equals("2")) {
 				saleInfo[0] = "S2";
+				saleInfo[1] = "S";
 			} else {
 				this.print("\n\n상품코드 : ");
 				saleInfo[1] = sc.next();
@@ -299,7 +326,7 @@ public class FrontController {
 		boolean flag = false;
 
 		for(int i=0;i<preGoodsList.length;i++) {
-			if(preGoodsList[i][1].contentEquals(goodsInfo[1])) {
+			if(preGoodsList[i][1].equals(goodsInfo[1])) {
 				flag = true;
 			}
 		}
@@ -389,7 +416,7 @@ public class FrontController {
 
 		return result;
 	}
-	
+
 	private String[] refundFirstPhase(String title, String[] userInfo) {
 		String[] result = new String[2];
 		result[0] = "S3";
@@ -405,8 +432,8 @@ public class FrontController {
 		}
 		return result;
 	}
-	
-	private void refundSecondPhase(String title, String[] userInfo, String[][] refundList) {
+
+	private String[] refundSecondPhase(String title, String[] userInfo, String[][] refundList) {
 		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
@@ -426,7 +453,7 @@ public class FrontController {
 			totalCost += (Integer.parseInt(refundList[i][3]) * Integer.parseInt(refundList[i][4]));
 		}
 
-		saleInfo[0] = "S1";
+		saleInfo[0] = null;
 		this.print(title + "Refund\n\n[ ");
 
 		for(int i=0;i<userInfo.length;i++) {
@@ -436,10 +463,11 @@ public class FrontController {
 		this.print("]\n\n--------------------------------------------------\n" +
 				date + "\n" + 
 				"--------------------------------------------------\n" +
-				"\t상품코드\t상품명\t수량\t단가\n" + 
+				"결제번호\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
 
 		for(int i=0;i<refundList.length;i++) {
+			this.print((i+1)+"");
 			for(int j=1;j<refundList[i].length-1;j++) {
 				this.print("\t" + refundList[i][j]);
 			}
@@ -452,17 +480,180 @@ public class FrontController {
 				"\n\n________________________________ Select : ");
 		select = sc.next();
 
-		if(select.equals("0")) {
+		switch(select) {
+		case "0":
 			saleInfo = null;
-		} else {
-			if(select.equals("2")) {
-				saleInfo[0] = null;
-			} else {
-				this.print("\n\n주문코드________ : ");
-				saleInfo[1] = sc.next();
+			break;
+		case "1":
+			saleInfo[0] = "S4";
+			saleInfo[1] = "C";
+			break;
+		case "2":
+			saleInfo[0] = "S5";
+			this.print("\n\n결제번호 : ");
+			saleInfo[1] = sc.next();
+			break;
+		}
+
+		return saleInfo;
+	}
+	
+	private String[] refundSecondPhase(String title, String[] userInfo, String[][] refundList, String[][] goodsList) {
+		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		Date originalDate;
+		String date = null;
+		String[] saleInfo = new String[2];
+		String select;
+		int totalCost = 0;
+
+		try {
+			originalDate = originalDateFormat.parse(refundList[refundList.length-1][0]);
+			date = dateFormat.format(originalDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		for(int i=0;i<refundList.length;i++) {
+			totalCost += (Integer.parseInt(refundList[i][3]) * Integer.parseInt(refundList[i][4]));
+		}
+
+		saleInfo[0] = null;
+		this.print(title + "Refund\n\n[ ");
+
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		}
+
+		this.print("]\n\n--------------------------------------------------\n" +
+				date + "\n" + 
+				"--------------------------------------------------\n" +
+				"결제번호\t상품코드\t상품명\t수량\t단가\n" + 
+				"--------------------------------------------------\n"); 
+
+		for(int i=0;i<refundList.length;i++) {
+			this.print((i+1)+"");
+			for(int j=1;j<refundList[i].length-1;j++) {
+				this.print("\t" + refundList[i][j]);
+			}
+			this.print("\n");
+		}
+		this.print("--------------------------------------------------\n"); 
+		
+		
+		for(int i=0;i<goodsList.length;i++) {
+			for(int j=1;j<goodsList[i].length-1;j++) {
+				this.print("\t" + goodsList[i][j]);
+			}
+			this.print("\n");
+		}
+		
+		this.print("--------------------------------------------------\n\n" +
+				"\t\t\t총 합계 : " + totalCost + "\n" + 
+				"0. 이전화면\n\n1. 다음 품목\t\t2. 반품" +
+				"\n\n________________________________ Select : ");
+		select = sc.next();
+
+		switch(select) {
+		case "0":
+			saleInfo = null;
+			break;
+		case "1":
+			saleInfo[0] = "S5";
+			this.print("\n\n결제번호 : ");
+			saleInfo[1] = sc.next();
+			break;
+		case "2":
+			saleInfo[0] = "S6";
+			break;
+		}
+
+		return saleInfo;
+	}
+
+	private String[][] makeRefundList(String[] refundInfo, String[][] refundList) {
+		String[][] result = new String[1][refundList[0].length];
+
+		for(int i=0;i<refundList[0].length;i++) {
+			if(i == 4) {
+				result[0][i] = "－" + refundList[Integer.parseInt(refundInfo[1])-1][i];
+			}else {
+				result[0][i] = refundList[Integer.parseInt(refundInfo[1])-1][i];
+			}
+		}
+		
+		return result;
+	}
+
+	private String[][] makeRefundList(String[] refundInfo, String[][] refundList, String[][] goodsList) {
+		boolean flag = true;
+		String[][] result;
+		
+		for(int i=0;i<goodsList.length;i++) {
+			if(goodsList[i].equals(refundList[Integer.parseInt(refundInfo[1])-1])) {
+				flag = false;
+			}
+		}
+		
+		if(flag) {
+			result = new String[goodsList.length+1][refundList[0].length];
+		}else {
+			result = new String[goodsList.length][refundList[0].length];
+		}
+		
+		for(int i=0;i<result.length;i++) {
+			if(i<goodsList.length) {
+				result[i] = goodsList[i];
+			}else {
+				//result[i] = refundList[Integer.parseInt(refundInfo[1])-1];
+				for(int j=0;j<refundList[i].length;j++) {
+					if(j == 4) {
+						result[i][j] = "－" + refundList[Integer.parseInt(refundInfo[1])-1][j];
+						System.out.println(result[i][j]);
+					}else {
+						result[i][j] = refundList[Integer.parseInt(refundInfo[1])-1][j];
+						System.out.println(result[i][j]);
+					}
+				}
 			}
 		}
 
+		return result;
+	}
+
+	private String salesManage(String title, String[] userInfo) {
+		this.print(title + "Employee Management\n\n[ ");
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		} 
+		this.print("]\n\n1. 상품등록\t\t2. 상품정보수정\n0. 이전화면\n\n________________________________ Select : ");
+		return sc.next();
+	}
+
+	private String[] goodsReg(String title, String[] userInfo) {
+		String[] goodsInfo = new String[7];
+
+		goodsInfo[0] = "M1";
+		this.print(title + "Employee Registration\n\n[ ");
+		for(int i=0;i<userInfo.length;i++) {
+			this.print(userInfo[i] + " ");
+		} 
+		this.print("]\n" + 
+				"\n" + 
+				"\t[Goods Code] : ");
+		goodsInfo[1] = sc.next();
+		this.print("\t[Goods Name]   : ");
+		goodsInfo[2] = sc.next();
+		this.print("\t[Goods Price]   : ");
+		goodsInfo[3] = sc.next();
+		this.print("\t[Goods Expire Date]   : ");
+		goodsInfo[4] = sc.next();
+		this.print("\t[Goods Stock]   : ");
+		goodsInfo[5] = sc.next();
+		this.print("\t[Goods Safety Stock]   : ");
+		goodsInfo[6] = sc.next();
+
+		return goodsInfo;
 	}
 
 	private String title() {
