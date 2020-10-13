@@ -338,11 +338,12 @@ public class DataAccessObject {
 		return result;
 	}
 
-	public boolean getGoodsInfo(int fileIndex, GoodsBean gb) {
+	public void getGoodsInfo(int fileIndex, GoodsBean gb) {
 		file = new File(filePath[fileIndex]);
-		boolean result = false;
 		String record = null;
 		String[] recordArr;
+
+		gb.setResult(false);
 
 		try {
 			fr = new FileReader(file);
@@ -359,20 +360,9 @@ public class DataAccessObject {
 					gb.setGoodsName(recordArr[1]);
 					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
 					gb.setGoodsExpireDate(recordArr[3]);
-					if(gb.getSaleInfoList() != null) {
-						for(int i=0;i<gb.getSaleInfoList().length;i++) {
-							if(gb.getGoodsCode().equals(gb.getSaleInfoList()[i][1])) {
-								gb.setGoodsAmount(Integer.parseInt(gb.getSaleInfoList()[i][3])+1);
-								break;
-							}else {
-								gb.setGoodsAmount(1);
-							}
-						}
-					}else {
-						gb.setGoodsAmount(1);
-					}
+					gb.setGoodsAmount(1);
+					gb.setResult(true);
 
-					result = true;
 					break;
 				}
 			}
@@ -391,42 +381,76 @@ public class DataAccessObject {
 			}
 		}
 
-		return result;
 	}
 
-	public boolean setSaleInfo(int fileIndex, GoodsBean gb) {
+	public void getGoodsInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
 		file = new File(filePath[fileIndex]);
-		StringBuilder record;
-		boolean result = false;
+		String record = null;
+		String[] recordArr;
+
+		gb.setResult(false);
+
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				recordArr = record.split(",");
+
+				if(gb.getGoodsCode().equals(recordArr[0])) {
+					gb.setGoodsName(recordArr[1]);
+					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
+					gb.setGoodsExpireDate(recordArr[3]);
+					for(int i=0;i<goodsListBeanArrayList.size();i++) {
+						if(gb.getGoodsCode().equals(goodsListBeanArrayList.get(i).getGoodsCode())) {
+							gb.setGoodsAmount(goodsListBeanArrayList.get(i).getGoodsAmount()+1);
+							break;
+						}else {
+							gb.setGoodsAmount(1);
+						}
+					}
+					gb.setResult(true);
+					break;
+				}
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setSaleInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
+		file = new File(filePath[fileIndex]);
+		String record = null;
+		gb.setResult(false);
 
 		try {
 			fw = new FileWriter(file, true);
 			bw = new BufferedWriter(fw);
-			/*
-			for(GoodsBean setgb : gb.getSaleInfoList()) {
-				record = "\n" + setgb.getGoodsCode() + "," + setgb.getGoodsName() + "," + setgb.getGoodsAmount() + "," + 
-						setgb.getGoodsPrice() + "," + setgb.getGoodsExpireDate() + "," + setgb.getSaleDate();
-				bw.write(record);
+
+			for(GoodsBean goodsListBean : goodsListBeanArrayList) {
+				
+				record = goodsListBean.getSaleDate() + "," + goodsListBean.getGoodsCode() + "," + goodsListBean.getGoodsName() + "," + goodsListBean.getGoodsAmount() + "," + goodsListBean.getGoodsPrice() + "," + 
+						goodsListBean.getGoodsExpireDate();
+				
+				bw.write(record + "\n");
 				bw.flush();
 			}
-			 */
-			for(int i=0;i<gb.getSaleInfoList().length;i++) {
-				record = new StringBuilder();
-
-				record.append(gb.getSaleInfoList()[gb.getSaleInfoList().length-1][0]);
-				record.append(",");
-				for(int j=1;j<gb.getSaleInfoList()[i].length;j++) {
-					record.append(gb.getSaleInfoList()[i][j]);
-					if(j<gb.getSaleInfoList()[i].length-1) {
-						record.append(",");
-					}
-				}
-				//record.append(gb.getState());
-
-				bw.write(record.toString() + "\n");
-				bw.flush();
-			}
-			result = true;
+			gb.setResult(true);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
@@ -441,27 +465,26 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
-		return result;
 	}
-	
+
 	public ArrayList<GoodsBean> getSaleInfo(int fileIndex) {
 		file = new File(filePath[fileIndex]);
 		ArrayList<GoodsBean> saleInfo = new ArrayList<GoodsBean>();
 		GoodsBean gb;
 		String record;
 		String[] recordArr;
-		
+
 		try {
 			fr = new FileReader(file);
 			br = new BufferedReader(fr);
-			
+
 			while(true) {
 				record = br.readLine();
 				if(record == null) {
 					break;
 				}
 				gb = new GoodsBean();
-				
+
 				recordArr = record.split(",");
 				gb.setSaleDate(recordArr[0]);
 				gb.setGoodsCode(recordArr[1]);
@@ -469,7 +492,7 @@ public class DataAccessObject {
 				gb.setGoodsAmount(Integer.parseInt(recordArr[3]));
 				gb.setGoodsPrice(Integer.parseInt(recordArr[4]));
 				gb.setGoodsExpireDate(recordArr[5]);
-				
+
 				saleInfo.add(gb);
 			}
 		}catch(Exception e) {
@@ -488,15 +511,15 @@ public class DataAccessObject {
 		}
 		return saleInfo;
 	}
-	
 
-	public boolean getRefundList(int fileIndex, GoodsBean gb) {
-		boolean result = false;
+	public ArrayList<GoodsBean> getRefundList(int fileIndex, GoodsBean gb) {
 		file = new File(filePath[fileIndex]);
 		ArrayList<GoodsBean> refundList = new ArrayList<GoodsBean>();
 		GoodsBean recordBean;
 		String[] recordArr;
 		String record;
+		
+		gb.setResult(false);
 
 		try {
 			fr = new FileReader(file);
@@ -509,7 +532,7 @@ public class DataAccessObject {
 				recordArr = record.split(",");
 				if(recordArr[0].equals(gb.getSaleDate())) {
 					recordBean = new GoodsBean();
-					result = true;
+					gb.setResult(true);
 					recordBean.setSaleDate(recordArr[0]);
 					recordBean.setGoodsCode(recordArr[1]);
 					recordBean.setGoodsName(recordArr[2]);
@@ -519,7 +542,6 @@ public class DataAccessObject {
 					refundList.add(recordBean);
 				}
 			}
-			gb.setRefundList(refundList);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
@@ -534,22 +556,22 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
-		return result;
+		return refundList;
 	}
-	
+
 	public void setRefundList(int fileIndex, ArrayList<GoodsBean> saleInfo) {
 		file = new File(filePath[fileIndex]);
 		String record;
-		
+
 		try {
 			fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
-			
+
 			for(GoodsBean gb : saleInfo) {
 				record = gb.getSaleDate() + "," + gb.getGoodsCode() + "," + gb.getGoodsName() + "," + gb.getGoodsAmount() + "," +
 						gb.getGoodsPrice() + "," + gb.getGoodsExpireDate();
-			bw.write(record + "\n");
-			bw.flush();
+				bw.write(record + "\n");
+				bw.flush();
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -604,6 +626,54 @@ public class DataAccessObject {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public ArrayList<GoodsBean> getDailySaleInfo(int fileIndex, GoodsBean gb) {
+		file = new File(filePath[fileIndex]);
+		String record;
+		String[] recordArr;
+		GoodsBean recordBean;
+		ArrayList<GoodsBean> recordList = new ArrayList<GoodsBean>();
+
+		try {
+			fr = new FileReader(file);
+			br = new BufferedReader(fr);
+
+			while(true) {
+				record = br.readLine();
+				if(record == null) {
+					break;
+				}
+				recordArr = record.split(",");
+
+				if(gb.getSaleDate().equals(recordArr[0].substring(0, gb.getSaleDate().length()))) {
+					recordBean = new GoodsBean();
+
+					recordBean.setSaleDate(recordArr[0]);
+					recordBean.setGoodsCode(recordArr[1]);
+					recordBean.setGoodsName(recordArr[2]);
+					recordBean.setGoodsAmount(Integer.parseInt(recordArr[3]));
+					recordBean.setGoodsPrice(Integer.parseInt(recordArr[4]));
+					recordBean.setGoodsExpireDate(recordArr[5]);
+
+					recordList.add(recordBean);
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fr != null) {
+					fr.close();
+				}
+				if(br != null) {
+					br.close();
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return recordList;
 	}
 
 }

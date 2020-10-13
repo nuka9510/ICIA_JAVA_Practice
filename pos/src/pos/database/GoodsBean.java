@@ -1,7 +1,5 @@
 package pos.database;
 
-import java.util.ArrayList;
-
 public class GoodsBean {
 
 	private String request;
@@ -13,9 +11,8 @@ public class GoodsBean {
 	private int goodsSafetyStock;
 	private String goodsExpireDate;
 	private String saleDate;
-	private String[][] saleInfoList;
-	private ArrayList<GoodsBean> refundList;
 	private String state;
+	private boolean result;
 	
 	public String getRequest() {
 		return request;
@@ -71,24 +68,17 @@ public class GoodsBean {
 	public void setSaleDate(String saleDate) {
 		this.saleDate = saleDate;
 	}
-	public String[][] getSaleInfoList() {
-		return saleInfoList;
-	}
-	public void setSaleInfoList(String[][] saleInfoList) {
-		this.saleInfoList = saleInfoList;
-	}
-	public ArrayList<GoodsBean> getRefundList() {
-		return refundList;
-	}
-	public void setRefundList(ArrayList<GoodsBean> refundList) {
-		this.refundList = refundList;
-	}
 	public String getState() {
 		return state;
 	}
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+	public boolean isResult() {
+		return result;
+	}
+	public void setResult(boolean result) {
+		this.result = result;
+	}
 	
 }

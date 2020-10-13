@@ -1,9 +1,8 @@
 package pos.controller;
 
 import java.text.SimpleDateFormat;
-//import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Date;
-
 import pos.database.EmployeeBean;
 import pos.database.GoodsBean;
 import pos.service.Access;
@@ -78,14 +77,33 @@ public class BackController {
 		String[] goodsInfo = null;
 		GoodsBean gb = new GoodsBean();
 		Sale sale;
+		ArrayList<GoodsBean> goodsListBeanArrayList = new ArrayList<GoodsBean>();
+		GoodsBean goodsListBean;
 
 		gb.setSaleDate(simpleDateFormat.format(date));
 		gb.setRequest(saleInfo[0]);
 		gb.setGoodsCode(saleInfo[1]);
-		gb.setSaleInfoList(goodsList);
-
-		sale = new Sale();
-		if(sale.entrance(gb)) {
+		if(goodsList!=null) {
+			for(int i=0;i<goodsList.length;i++) {
+				goodsListBean = new GoodsBean();
+				
+				goodsListBean.setSaleDate(goodsList[i][0]);
+				goodsListBean.setGoodsCode(goodsList[i][1]);
+				goodsListBean.setGoodsName(goodsList[i][2]);
+				goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
+				goodsListBean.setGoodsPrice(Integer.parseInt(goodsList[i][4]));
+				goodsListBean.setGoodsExpireDate(goodsList[i][4]);
+				
+				goodsListBeanArrayList.add(goodsListBean);
+			}
+			sale = new Sale();
+			sale.entrance(gb, goodsListBeanArrayList);
+		}else {
+			sale = new Sale();
+			sale.entrance(gb);
+		}	
+		
+		if(gb.isResult()) {
 			goodsInfo = new String[6];
 			goodsInfo[0] = gb.getSaleDate();
 			goodsInfo[1] = gb.getGoodsCode();
@@ -99,36 +117,35 @@ public class BackController {
 	}
 	
 	public void setSaleInfo(String[] saleInfo, String[][] goodsList) {
-		//ArrayList<GoodsBean> saleInfoList = new ArrayList<GoodsBean>();
+		ArrayList<GoodsBean> goodsListBeanArrayList = new ArrayList<GoodsBean>();
 		Sale sale;
 		GoodsBean gb = new GoodsBean();
-		//GoodsBean gbList;
+		GoodsBean goodsListBean;
 		
 		gb.setRequest(saleInfo[0]);
 		gb.setState(saleInfo[1]);
-		/*
+		
 		for(int i=0;i<goodsList.length;i++) {
-			gbList = new GoodsBean();
+			goodsListBean = new GoodsBean();
+
+			goodsListBean.setSaleDate(goodsList[goodsList.length-1][0]);
+			goodsListBean.setGoodsCode(goodsList[i][1]);
+			goodsListBean.setGoodsName(goodsList[i][2]);
+			goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
+			goodsListBean.setGoodsPrice(Integer.parseInt(goodsList[i][4]));
+			goodsListBean.setGoodsExpireDate(goodsList[i][5]);
 			
-			gbList.setGoodsCode(goodsList[i][0]);
-			gbList.setGoodsName(goodsList[i][1]);
-			gbList.setGoodsAmount(Integer.parseInt(goodsList[i][2]));
-			gbList.setGoodsPrice(Integer.parseInt(goodsList[i][3]));
-			gbList.setGoodsExpireDate(goodsList[i][4]);
-			gbList.setSaleDate(simpleDateFormat.format(date));
-			
-			saleInfoList.add(gbList);
+			goodsListBeanArrayList.add(goodsListBean);
 		}
-		*/
-		gb.setSaleInfoList(goodsList);
 		
 		sale = new Sale();
 		
-		sale.entrance(gb);
+		sale.entrance(gb, goodsListBeanArrayList);
 	}
 	
 	public String[][] getRefundList(String[] refundInfo) {
 		String[][] refundList = null;
+		ArrayList<GoodsBean> refundListArrayList;
 		GoodsBean gb = new GoodsBean();
 		Sale sale;
 		
@@ -137,15 +154,17 @@ public class BackController {
 		
 		sale = new Sale();
 		
-		if(sale.entrance(gb)) {
-			refundList = new String[gb.getRefundList().size()][6];
-			for(int i=0;i<gb.getRefundList().size();i++) {
-				refundList[i][0] = gb.getRefundList().get(i).getSaleDate();
-				refundList[i][1] = gb.getRefundList().get(i).getGoodsCode();
-				refundList[i][2] = gb.getRefundList().get(i).getGoodsName();
-				refundList[i][3] = gb.getRefundList().get(i).getGoodsAmount() + "";
-				refundList[i][4] = gb.getRefundList().get(i).getGoodsPrice() + "";
-				refundList[i][5] = gb.getRefundList().get(i).getGoodsExpireDate();
+		refundListArrayList = sale.entrance(gb);
+		
+		if(gb.isResult()) {
+			refundList = new String[refundListArrayList.size()][6];
+			for(int i=0;i<refundListArrayList.size();i++) {
+				refundList[i][0] = refundListArrayList.get(i).getSaleDate();
+				refundList[i][1] = refundListArrayList.get(i).getGoodsCode();
+				refundList[i][2] = refundListArrayList.get(i).getGoodsName();
+				refundList[i][3] = refundListArrayList.get(i).getGoodsAmount() + "";
+				refundList[i][4] = refundListArrayList.get(i).getGoodsPrice() + "";
+				refundList[i][5] = refundListArrayList.get(i).getGoodsExpireDate();
 			}
 		}
 		
@@ -154,12 +173,27 @@ public class BackController {
 	
 	public void setRefundList(String[] refundInfo, String[][] goodsList) {
 		 GoodsBean gb = new GoodsBean();
+		 GoodsBean goodsListBean;
+		 ArrayList<GoodsBean> goodsListBeanArrayList = new ArrayList<GoodsBean>();
+		 
 		 Sale sale = new Sale();
 		 
 		 gb.setRequest(refundInfo[0]);
-		 gb.setSaleInfoList(goodsList);
 		 
-		 sale.entrance(gb);
+		 for(int i=0;i<goodsList.length;i++) {
+			 goodsListBean = new GoodsBean();
+			 
+			 goodsListBean.setSaleDate(goodsList[i][0]);
+			 goodsListBean.setGoodsCode(goodsList[i][1]);
+			 goodsListBean.setGoodsName(goodsList[i][2]);
+			 goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
+			 goodsListBean.setGoodsPrice(Integer.parseInt(goodsList[i][4]));
+			 goodsListBean.setGoodsExpireDate(goodsList[i][5]);
+			 
+			 goodsListBeanArrayList.add(goodsListBean);
+		 }
+		 
+		 sale.entrance(gb, goodsListBeanArrayList);
 	}
 	
 	public void goodsReg(String[] goodsInfo) {
@@ -177,5 +211,32 @@ public class BackController {
 		manage = new Management();
 		manage.entrance(gb);
 	}
-
+	
+	public String[][] getDailySaleInfo(String[] saleInfo) {
+		GoodsBean gb = new GoodsBean();
+		Management manage;
+		String[][] dailySaleInfo;
+		ArrayList<GoodsBean> dailySaleInfoArrayList;
+		
+		gb.setRequest(saleInfo[0]);
+		gb.setSaleDate(saleInfo[1]);
+		
+		manage = new Management();
+		
+		dailySaleInfoArrayList = manage.entrance(gb);
+		
+		dailySaleInfo = new String[dailySaleInfoArrayList.size()][6];
+		
+		for(int i=0;i<dailySaleInfoArrayList.size();i++) {
+			dailySaleInfo[i][0] = dailySaleInfoArrayList.get(i).getSaleDate();
+			dailySaleInfo[i][1] = dailySaleInfoArrayList.get(i).getGoodsCode();
+			dailySaleInfo[i][2] = dailySaleInfoArrayList.get(i).getGoodsName();
+			dailySaleInfo[i][3] = dailySaleInfoArrayList.get(i).getGoodsAmount() + "";
+			dailySaleInfo[i][4] = dailySaleInfoArrayList.get(i).getGoodsPrice() + "";
+			dailySaleInfo[i][5] = dailySaleInfoArrayList.get(i).getGoodsExpireDate();
+		}
+		
+		return dailySaleInfo;
+	}
+	
 }
