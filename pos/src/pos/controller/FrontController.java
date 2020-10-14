@@ -49,7 +49,7 @@ public class FrontController {
 								break;
 							}
 
-							goodsInfo = bc.saleGoodsInfo(saleInfo, goodsList);
+							goodsInfo = bc.saleGoodsInfo(saleInfo);
 							if(goodsInfo != null) {
 								if(this.isExpireDate(goodsInfo)) {
 									goodsList = this.makeList(goodsInfo);
@@ -63,7 +63,7 @@ public class FrontController {
 
 										switch(saleInfo[0]) {
 										case "S1":
-											goodsInfo = bc.saleGoodsInfo(saleInfo, goodsList);
+											goodsInfo = bc.saleGoodsInfo(saleInfo);
 											if(goodsInfo != null) {
 												if(this.isExpireDate(goodsInfo)) {
 													goodsList = this.makeList(goodsInfo, goodsList);
@@ -85,9 +85,9 @@ public class FrontController {
 						}
 						break;
 					case "2":
-						refundInfo = this.refundFirstPhase(title, userInfo);
+						refundInfo = this.refund(title, userInfo);
 						refundList = bc.getRefundList(refundInfo);
-						refundInfo = this.refundSecondPhase(title, userInfo, refundList);
+						refundInfo = this.refund(title, userInfo, refundList);
 
 						switch(refundInfo[0]) {
 						case "0":
@@ -98,8 +98,8 @@ public class FrontController {
 						case "S5":
 							goodsList = this.makeRefundList(refundInfo, refundList);
 							while(true) {
-								refundInfo = this.refundSecondPhase(title, userInfo, refundList, goodsList);
-								if(refundInfo[0].equals("S6")) {
+								refundInfo = this.refund(title, userInfo, refundList, goodsList);
+								if(refundInfo[0].equals("S4")) {
 									bc.setRefundList(refundInfo, goodsList);
 									break;
 								}
@@ -143,8 +143,9 @@ public class FrontController {
 								break;
 							case "3":
 							case "4":
+							case "5":
 								while(true) {
-									saleInfo = this.dailySaleInfo(title, userInfo);
+									saleInfo = this.dailySaleInfo(title, userInfo, salesManage);
 
 									if(saleInfo[0].equals("0")) {
 										break;	
@@ -440,7 +441,7 @@ public class FrontController {
 		return result;
 	}
 
-	private String[] refundFirstPhase(String title, String[] userInfo) {
+	private String[] refund(String title, String[] userInfo) {
 		String[] result = new String[2];
 		result[0] = "S3";
 		this.print(title + "Refund\n\n[ ");
@@ -456,7 +457,7 @@ public class FrontController {
 		return result;
 	}
 
-	private String[] refundSecondPhase(String title, String[] userInfo, String[][] refundList) {
+	private String[] refund(String title, String[] userInfo, String[][] refundList) {
 		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
@@ -520,7 +521,7 @@ public class FrontController {
 		return saleInfo;
 	}
 
-	private String[] refundSecondPhase(String title, String[] userInfo, String[][] refundList, String[][] goodsList) {
+	private String[] refund(String title, String[] userInfo, String[][] refundList, String[][] goodsList) {
 		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
@@ -590,7 +591,7 @@ public class FrontController {
 			saleInfo[1] = sc.next();
 			break;
 		case "2":
-			saleInfo[0] = "S6";
+			saleInfo[0] = "S4";
 			break;
 		}
 
@@ -639,7 +640,7 @@ public class FrontController {
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		} 
-		this.print("]\n\n1. 상품등록\t\t2. 상품정보수정\n3. 일별매출현황\t\t4. 월별매출현황\n0. 이전화면\n\n________________________________ Select : ");
+		this.print("]\n\n1. 상품등록\t\t2. 상품정보수정\n3. 일별매출현황\t\t4. 월별매출현황\n5. 월별베스트상품\n0. 이전화면\n\n________________________________ Select : ");
 		return sc.next();
 	}
 
@@ -669,12 +670,25 @@ public class FrontController {
 		return goodsInfo;
 	}
 
-	private String[] dailySaleInfo(String title, String[] userInfo) {
+	private String[] dailySaleInfo(String title, String[] userInfo, String salesManage) {
 		String[] result = new String[2];
-
-		result[0] = "M3";
-
-		this.print(title + "일별매출현황\n\n[ ");
+		System.out.println(salesManage);
+		
+		result[0] = null;
+		
+		this.print(title);
+		
+		if(salesManage.equals("3")) {
+			this.print("일별매출현황\n\n[ ");
+			result[0] = "M3";
+		}else if(salesManage.equals("4")) {
+			this.print("월별매출현황\n\n[ ");
+			result[0] = "M3";
+		}else if(salesManage.equals("5")) {
+			this.print("월별베스트상품\n\n[ ");
+			result[0] = "M4";
+		}
+		
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
@@ -701,7 +715,7 @@ public class FrontController {
 
 		if(salesManage.equals("3")) {
 			dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-		}else if(salesManage.equals("4")) {
+		}else if(salesManage.equals("4")||salesManage.equals("5")) {
 			dateFormat = new SimpleDateFormat("yyyy.MM");
 		}
 
@@ -716,13 +730,16 @@ public class FrontController {
 			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
 		}
 
-		result[0] = "M3";
-
 		this.print(title);
 		if(salesManage.equals("3")) {
 			this.print("일별매출현황\n\n[ ");
+			result[0] = "M3";
 		}else if(salesManage.equals("4")) {
 			this.print("월별매출현황\n\n[ ");
+			result[0] = "M3";
+		}else if(salesManage.equals("5")) {
+			this.print("월별베스트상품\n\n[ ");
+			result[0] = "M4";
 		}
 
 		for(int i=0;i<userInfo.length;i++) {
@@ -737,6 +754,12 @@ public class FrontController {
 
 
 		for(int i=0;i<goodsList.length;i++) {
+			if(i>=1) {
+				if(!goodsList[i][0].equals(goodsList[i-1][0])) {
+					flag = true;
+					count++;
+				}
+			}
 			if(flag) {
 				this.print(count+"");
 				flag = false;
@@ -746,13 +769,6 @@ public class FrontController {
 				this.print("\t" + goodsList[i][j]);
 			}
 			this.print("\n");
-
-			if(i>=1) {
-				if(goodsList[i][0]!=goodsList[i-1][0]) {
-					flag = true;
-					count++;
-				}
-			}
 		}
 
 		this.print("--------------------------------------------------\n\n" +

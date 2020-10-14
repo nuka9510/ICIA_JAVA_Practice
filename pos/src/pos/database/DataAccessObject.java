@@ -444,8 +444,8 @@ public class DataAccessObject {
 
 			for(GoodsBean goodsListBean : goodsListBeanArrayList) {
 				
-				record = goodsListBean.getSaleDate() + "," + goodsListBean.getGoodsCode() + "," + goodsListBean.getGoodsName() + "," + goodsListBean.getGoodsAmount() + "," + goodsListBean.getGoodsPrice() + "," + 
-						goodsListBean.getGoodsExpireDate();
+				record = goodsListBean.getSaleDate() + "," + goodsListBean.getGoodsCode() + "," + goodsListBean.getGoodsName() + ","
+						+ goodsListBean.getGoodsAmount() + "," + goodsListBean.getGoodsPrice() + "," + goodsListBean.getGoodsExpireDate();
 				
 				bw.write(record + "\n");
 				bw.flush();
