@@ -73,12 +73,12 @@ public class BackController {
 
 	public String[] saleGoodsInfo(String[] saleInfo) {
 		Date date = new Date();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		String[] goodsInfo = null;
 		GoodsBean gb = new GoodsBean();
 		Sale sale;
 
-		gb.setSaleDate(simpleDateFormat.format(date));
+		gb.setSaleDate(dateFormat.format(date));
 		gb.setRequest(saleInfo[0]);
 		gb.setGoodsCode(saleInfo[1]);
 

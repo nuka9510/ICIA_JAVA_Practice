@@ -37,12 +37,6 @@ public class DataAccessObject {
 				if(record == null) {
 					break;
 				}
-				/*
-				if(eb.getEmployeeCode().equals(record.substring(0, record.indexOf(",")))) {
-					result = true;
-					break;
-				}
-				 */
 
 				String[] recordArr = record.split(",");
 				if(eb.getEmployeeCode().equals(recordArr[0])) {
@@ -84,15 +78,6 @@ public class DataAccessObject {
 				if(record == null) {
 					break;
 				}
-				/*
-				if(eb.getEmployeeCode().equals(record.substring(0, record.indexOf(",")))) {
-					String temp = record.substring(record.indexOf(",")+1);
-					if(eb.getAccessCode().equals(temp.substring(0, temp.indexOf(",")))) {
-						result = true;
-						break;
-					}
-				}
-				 */
 
 				String[] recordArr = record.split(",");
 				if(eb.getEmployeeCode().equals(recordArr[0])) {
@@ -134,22 +119,6 @@ public class DataAccessObject {
 				if(record == null) {
 					break;
 				}
-				/*
-				if(eb.getEmployeeCode().equals(record.substring(0, record.indexOf(",")))) {
-					String temp = record.substring(record.indexOf(",")+1);
-					if(eb.getAccessCode().equals(temp.substring(0, temp.indexOf(",")))) {
-
-						temp = temp.substring(temp.indexOf(",")+1);
-						eb.setEmployeeName(temp.substring(0, temp.indexOf(",")));
-
-						temp = temp.substring(temp.indexOf(",")+1);
-						eb.setEmployeephone(temp.substring(0, temp.indexOf(",")));
-
-						temp = temp.substring(temp.indexOf(",")+1);
-						eb.setEmployeeLevel((temp.equals("Manager"))?true:false);
-					}
-				}
-				 */
 
 				String[] recordArr = record.split(",");
 				if(eb.getEmployeeCode().equals(recordArr[0])) {

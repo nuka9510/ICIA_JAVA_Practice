@@ -462,7 +462,7 @@ public class FrontController {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
 		String date = null;
-		String[] saleInfo = new String[2];
+		String[] refundInfo = new String[2];
 		String select;
 		int totalCost = 0;
 
@@ -477,7 +477,7 @@ public class FrontController {
 			totalCost += (Integer.parseInt(refundList[i][3]) * Integer.parseInt(refundList[i][4]));
 		}
 
-		saleInfo[0] = null;
+		refundInfo[0] = null;
 		this.print(title + "Refund\n\n[ ");
 
 		for(int i=0;i<userInfo.length;i++) {
@@ -508,17 +508,17 @@ public class FrontController {
 		case "0":
 			break;
 		case "1":
-			saleInfo[0] = "S4";
-			saleInfo[1] = "C";
+			refundInfo[0] = "S4";
+			refundInfo[1] = "C";
 			break;
 		case "2":
-			saleInfo[0] = "S5";
+			refundInfo[0] = "S5";
 			this.print("\n\n결제번호 : ");
-			saleInfo[1] = sc.next();
+			refundInfo[1] = sc.next();
 			break;
 		}
 
-		return saleInfo;
+		return refundInfo;
 	}
 
 	private String[] refund(String title, String[] userInfo, String[][] refundList, String[][] goodsList) {
@@ -526,7 +526,7 @@ public class FrontController {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
 		String date = null;
-		String[] saleInfo = new String[2];
+		String[] refundInfo = new String[2];
 		String select;
 		int totalCost = 0;
 
@@ -540,8 +540,12 @@ public class FrontController {
 		for(int i=0;i<refundList.length;i++) {
 			totalCost += (Integer.parseInt(refundList[i][3]) * Integer.parseInt(refundList[i][4]));
 		}
+		
+		for(int i=0;i<goodsList.length;i++) {
+			totalCost -= (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
+		}
 
-		saleInfo[0] = null;
+		refundInfo[0] = null;
 		this.print(title + "Refund\n\n[ ");
 
 		for(int i=0;i<userInfo.length;i++) {
@@ -583,19 +587,19 @@ public class FrontController {
 
 		switch(select) {
 		case "0":
-			saleInfo = null;
+			refundInfo = null;
 			break;
 		case "1":
-			saleInfo[0] = "S5";
+			refundInfo[0] = "S5";
 			this.print("\n\n결제번호 : ");
-			saleInfo[1] = sc.next();
+			refundInfo[1] = sc.next();
 			break;
 		case "2":
-			saleInfo[0] = "S4";
+			refundInfo[0] = "S4";
 			break;
 		}
 
-		return saleInfo;
+		return refundInfo;
 	}
 
 	private String[][] makeRefundList(String[] refundInfo, String[][] refundList) {
