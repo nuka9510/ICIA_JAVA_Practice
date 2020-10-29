@@ -21,22 +21,40 @@ public class BackController {
 		Access ac;
 
 		eb.setRequest(userInfo[0]);
-		eb.setEmployeeCode(userInfo[1]);
-		eb.setAccessCode(userInfo[2]);
+		eb.setStoreCode(userInfo[1]);
+		eb.setEmployeeCode(userInfo[2]);
+		eb.setAccessCode(userInfo[3]);
+		eb.setAccessState(1);
 
 		ac = new Access();
+		ac.entrance(eb);
 
-		if(ac.entrance(eb)) {
-			this.userInfo = new String[4];
-			this.userInfo[0] = eb.getEmployeeCode();
-			this.userInfo[1] = eb.getEmployeeName();
-			this.userInfo[2] = eb.isEmployeeLevel()?"Manager":"Mate";
-			this.userInfo[3] = eb.getAccessTime();
+		if(eb.isResult()) {
+			this.userInfo = new String[6];
+			this.userInfo[0] = eb.getStoreCode();
+			this.userInfo[1] = eb.getStoreName();
+			this.userInfo[2] = eb.getEmployeeCode();
+			this.userInfo[3] = eb.getEmployeeName();
+			this.userInfo[4] = eb.isEmployeeLevel()?"Manager":"Mate";
+			this.userInfo[5] = eb.getAccessTime();
 		}else {
 			this.userInfo = null;
 		}
 
 		return this.userInfo;
+	}
+	
+	public void signOut(String[] userInfo) {
+		EmployeeBean eb = new EmployeeBean();
+		Access ac;
+
+		eb.setRequest("A4");
+		eb.setStoreCode(userInfo[0]);
+		eb.setEmployeeCode(userInfo[2]);
+		eb.setAccessState(-1);
+
+		ac = new Access();
+		ac.entrance(eb);
 	}
 
 	public String[] employeeReg(String[] regInfo) {
@@ -44,10 +62,10 @@ public class BackController {
 		Access ac;
 
 		eb.setRequest(regInfo[0]);
-		eb.setEmployeeCode(regInfo[1]);
-		eb.setAccessCode(regInfo[2]);
-		eb.setEmployeeName(regInfo[3]);
-		eb.setEmployeephone(regInfo[4]);
+		eb.setStoreCode(regInfo[1]);
+		eb.setEmployeeCode(regInfo[2]);
+		eb.setAccessCode(regInfo[3]);
+		eb.setEmployeeName(regInfo[4]);
 		eb.setEmployeeLevel(regInfo[5].equals("Manager")?true:false);
 
 		ac = new Access();
@@ -61,8 +79,9 @@ public class BackController {
 		Access ac;
 
 		eb.setRequest(modInfo[0]);
-		eb.setEmployeeCode(modInfo[1]);
-		eb.setAccessCode(modInfo[2]);
+		eb.setStoreCode(modInfo[1]);
+		eb.setEmployeeCode(modInfo[2]);
+		eb.setAccessCode(modInfo[3]);
 
 		ac = new Access();
 
@@ -215,7 +234,7 @@ public class BackController {
 			dailySaleInfo[i][2] = dailySaleInfoArrayList.get(i).getGoodsName();
 			dailySaleInfo[i][3] = dailySaleInfoArrayList.get(i).getGoodsAmount() + "";
 			dailySaleInfo[i][4] = dailySaleInfoArrayList.get(i).getGoodsPrice() + "";
-			dailySaleInfo[i][5] = dailySaleInfoArrayList.get(i).getGoodsExpireDate();
+			dailySaleInfo[i][5] = (dailySaleInfoArrayList.get(i).getGoodsAmount() * dailySaleInfoArrayList.get(i).getGoodsPrice()) + "";
 		}
 
 		return dailySaleInfo;

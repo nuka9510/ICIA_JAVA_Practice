@@ -29,7 +29,7 @@ public class FrontController {
 		while(true) {
 			userInfo = this.signIn(title);
 
-			if(userInfo == null) {
+			if(userInfo[1].equals("0")) {
 				break;
 			}
 
@@ -131,6 +131,7 @@ public class FrontController {
 								break;
 							}
 						}
+						break;
 					case "4":
 						while(true) {
 							salesManage = this.salesManage(title, userInfo);
@@ -168,27 +169,27 @@ public class FrontController {
 
 					if(selectService.equals("0")) {
 						selectService = null;
-						userInfo = null;
 						break;
 					}
 				}
 			}
+			bc.signOut(userInfo);
 		}
 	}
 
 	private String[] signIn(String title) {
-		String[] userInfo = new String[3];
+		String[] userInfo = new String[4];
 
 		userInfo[0] = "A1";
 		this.print(title+"\t[Sign In]\n" + 
 				"\n" + 
-				"\t[Employee Code] : ");
+				"\t[Store Code] : ");
 		userInfo[1] = this.sc.next();
-		if(userInfo[1].equals("0")) {
-			userInfo = null;
-		}else {
-			this.print("\t[Access Code]   : ");
+		if(!userInfo[1].equals("0")) {
+			this.print("\t[Employee Code]   : ");
 			userInfo[2] = this.sc.next();
+			this.print("\t[Access Code]   : ");
+			userInfo[3] = this.sc.next();
 		}
 
 		return userInfo;
@@ -201,7 +202,7 @@ public class FrontController {
 			this.print(userInfo[i] + " ");
 		}
 		this.print("]\n\n1. 상품판매\t\t2. 상품반품\n"); 
-		if(userInfo[2].equals("Manager")) {
+		if(userInfo[4].equals("Manager")) {
 			this.print("3. 직원관리\t\t4. 영업관리\n");
 		}
 		this.print("0. 이전화면\n\n________________________________ Select : ");
@@ -221,6 +222,7 @@ public class FrontController {
 		String[] regInfo = new String[6];
 
 		regInfo[0] = "A2";
+		regInfo[1] = userInfo[0];
 		this.print(title + "Employee Registration\n\n[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
@@ -228,12 +230,10 @@ public class FrontController {
 		this.print("]\n" + 
 				"\n" + 
 				"\t[Employee Code] : ");
-		regInfo[1] = sc.next();
-		this.print("\t[Access Code]   : ");
 		regInfo[2] = sc.next();
-		this.print("\t[Employee Name]   : ");
+		this.print("\t[Access Code]   : ");
 		regInfo[3] = sc.next();
-		this.print("\t[Employee Phone]   : ");
+		this.print("\t[Employee Name]   : ");
 		regInfo[4] = sc.next();
 		this.print("\t[Employee Level]   : ");
 		regInfo[5] = sc.next();
@@ -242,16 +242,17 @@ public class FrontController {
 	}
 
 	private String[] employeeMod(String title, String[] userInfo) {
-		String[] modInfo = new String[3];
+		String[] modInfo = new String[4];
 		modInfo[0] = "A3";
+		modInfo[1] = userInfo[0];
 		this.print(title + "Employee Modify\n\n[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
 		this.print("]\n\n\t[Employee Code]   : ");
-		modInfo[1] = this.sc.next();
-		this.print("\t[Access Code]   : ");
 		modInfo[2] = this.sc.next();
+		this.print("\t[Access Code]   : ");
+		modInfo[3] = this.sc.next();
 
 		return modInfo;
 	}
@@ -708,7 +709,7 @@ public class FrontController {
 	}
 
 	private String[] dailySaleInfo(String title, String[] userInfo, String salesManage, String[][] goodsList) {
-		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat originalDateFormat = null;
 		SimpleDateFormat dateFormat = null;
 		Date originalDate;
 		String date = null;
@@ -718,8 +719,10 @@ public class FrontController {
 		int count = 1;
 
 		if(salesManage.equals("3")) {
+			originalDateFormat = new SimpleDateFormat("yyyyMMdd");
 			dateFormat = new SimpleDateFormat("yyyy.MM.dd");
 		}else if(salesManage.equals("4")||salesManage.equals("5")) {
+			originalDateFormat = new SimpleDateFormat("yyyyMM");
 			dateFormat = new SimpleDateFormat("yyyy.MM");
 		}
 
@@ -731,7 +734,7 @@ public class FrontController {
 		}
 
 		for(int i=0;i<goodsList.length;i++) {
-			totalCost += (Integer.parseInt(goodsList[i][3]) * Integer.parseInt(goodsList[i][4]));
+			totalCost += Integer.parseInt(goodsList[i][5]);
 		}
 
 		this.print(title);
@@ -753,7 +756,7 @@ public class FrontController {
 		this.print("]\n\n--------------------------------------------------\n" +
 				date + "\n" + 
 				"--------------------------------------------------\n" +
-				"결제번호\t상품코드\t상품명\t수량\t단가\n" + 
+				"순번\t상품코드\t상품명\t상품단가\t수량\t금액\n" + 
 				"--------------------------------------------------\n"); 
 
 

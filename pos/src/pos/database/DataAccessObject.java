@@ -1,648 +1,385 @@
 package pos.database;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DataAccessObject {
-	private String[] filePath = {"D:\\ICIA\\pos\\src\\pos\\database\\employeeData.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\employeeHistory.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\goodsInfo.txt",
-			"D:\\ICIA\\pos\\src\\pos\\database\\goodsList.txt",
-	"D:\\ICIA\\pos\\src\\pos\\database\\saleInfo.txt"};
-	private FileReader fr;
-	private BufferedReader br;
-	private FileWriter fw;
-	private BufferedWriter bw;
-	private File file;
+	
+	Connection connect;
 
 	public DataAccessObject() {
-
-	}
-
-	public boolean isEmployeeCode(int fileIndex, EmployeeBean eb) {
-		boolean result = false;
-		file = new File(filePath[fileIndex]);
-
 		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-			String record = null;
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-
-				String[] recordArr = record.split(",");
-				if(eb.getEmployeeCode().equals(recordArr[0])) {
-					result = true;
-					break;
-				}
-
-			}
-
-		} catch (Exception e) {
+			Class.forName("oracle.jdbc.OracleDriver");
+			System.out.println("드라이버 접속 성공");
+		} catch (ClassNotFoundException e) {
+			System.out.println("드라이버 접속 실패");
 			e.printStackTrace();
-		} finally {
+		}
+	}
+	
+	public void setAutoTransAction(boolean trans) {
+		try {
+			if(!this.connect.isClosed()) {
+				this.connect.setAutoCommit(trans);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void endAutoTransAction(boolean trans) {
+		try {
+			if(!this.connect.isClosed()) {
+				if(trans) {
+					this.connect.commit();
+				}else {
+					this.connect.rollback();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
 			try {
-				if(fr != null) {
-					fr.close();
+				if(!this.connect.isClosed()) {
+					this.connect.isClosed();
 				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public boolean isEmployeeCode(EmployeeBean eb) {
+		boolean result = false;
+		
+		try {
+			this.connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			System.out.println("서버 접속 성공");
+			
+			String sql = "SELECT COUNT(*) AS \"ISEMCODE\" \n" + 
+						"FROM \"EM\" \n" + 
+						"WHERE EM_STCODE = ? AND EM_CODE = ?";
+			
+			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getStoreCode());
+			qeury.setNString(2, eb.getEmployeeCode());
+			
+
+			ResultSet qeuryResult = qeury.executeQuery();
+			
+			while(qeuryResult.next()) {
+				result = (qeuryResult.getInt("ISEMCODE") == 1)?true:false;
+			}
+			
+			qeury.isClosed();
+			qeuryResult.isClosed();
+			
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
+			e.printStackTrace();
 		}
 
 		return result;
 	}
 
-	public boolean isAccessCode(int fileIndex, EmployeeBean eb) {
+	public boolean isAccessCode(EmployeeBean eb) {
 		boolean result = false;
-		file = new File(filePath[fileIndex]);
-
+		
 		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-			String record = null;
+			String sql = "SELECT COUNT(*) AS \"ISACCESS\" \n" + 
+						"FROM \"EM\" \n" + 
+						"WHERE EM_STCODE = ? AND EM_CODE = ? AND EM_PWD = ?";
+			
+			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getStoreCode());
+			qeury.setNString(2, eb.getEmployeeCode());
+			qeury.setNString(3, eb.getAccessCode());
+			
 
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-
-				String[] recordArr = record.split(",");
-				if(eb.getEmployeeCode().equals(recordArr[0])) {
-					if(eb.getAccessCode().equals(recordArr[1])) {
-						result = true;
-						break;
-					}
-				}
-
+			ResultSet qeuryResult = qeury.executeQuery();
+			
+			while(qeuryResult.next()) {
+				result = (qeuryResult.getInt("ISACCESS") == 1)?true:false;
 			}
-		} catch (Exception e) {
+			
+			qeury.isClosed();
+			qeuryResult.isClosed();
+			
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
-		} finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
-
+		
 		return result;
 	}
 
-	public void getEmployeeData(int fileIndex, EmployeeBean eb) {
-		file = new File(filePath[fileIndex]);
-
+	public void getEmployeeData(EmployeeBean eb) {
+		
 		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-			String record = null;
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-
-				String[] recordArr = record.split(",");
-				if(eb.getEmployeeCode().equals(recordArr[0])) {
-					if(eb.getAccessCode().equals(recordArr[1])) {
-						eb.setEmployeeName(recordArr[2]);
-						eb.setEmployeephone(recordArr[3]);
-						eb.setEmployeeLevel(recordArr[4].equals("Manager")?true:false);
-					}
-				}
-
+			String sql = "SELECT ST.ST_NAME AS \"STNAME\", \n" + 
+					"        \"EM\".EM_NAME AS \"EMNAME\", \n" + 
+					"        \"EM\".EM_LEVEL AS \"EMLEVEL\", \n" + 
+					"        TO_CHAR(MAX(HI.HI_ACCESSDATE), 'YYYYMMDDHH24MISS') AS \"HIACCESSDATE\", \n" + 
+					"        HI.HI_EMSTCODE AS \"STCODE\", \n" + 
+					"        HI.HI_EMCODE AS \"EMCODE\" \n" + 
+					"FROM HI INNER JOIN \"EM\" ON HI.HI_EMCODE = \"EM\".EM_CODE AND HI.HI_EMSTCODE = \"EM\".EM_STCODE \n" + 
+					"        INNER JOIN ST ON HI.HI_EMSTCODE = ST.ST_CODE \n" + 
+					"WHERE HI.HI_STATE = 1 \n" + 
+					"        AND HI.HI_EMSTCODE = ? \n" + 
+					"        AND HI.HI_EMCODE = ? \n" + 
+					"GROUP BY ST.ST_NAME, \"EM\".EM_NAME, \"EM\".EM_LEVEL, HI.HI_EMSTCODE, HI.HI_EMCODE";
+			
+			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getStoreCode());
+			qeury.setNString(2, eb.getEmployeeCode());
+			
+			ResultSet qeuryResult;
+			
+			qeuryResult = qeury.executeQuery();
+			
+			while(qeuryResult.next()) {
+				eb.setStoreCode(qeuryResult.getNString("STCODE"));
+				eb.setStoreName(qeuryResult.getNString("STNAME"));
+				eb.setEmployeeCode(qeuryResult.getNString("EMCODE"));
+				eb.setEmployeeName(qeuryResult.getNString("EMNAME"));
+				eb.setEmployeeLevel((qeuryResult.getNString("EMLEVEL").equals("M")? true : false));
+				eb.setAccessTime(qeuryResult.getNString("HIACCESSDATE"));
 			}
-		} catch (Exception e) {
+			
+			qeury.isClosed();
+			qeuryResult.isClosed();
+			
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
-		} finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 	}
 
-	public void setEmployeeHistory(int fileIndex, EmployeeBean eb) {
-		file = new File(filePath[fileIndex]);
-
-		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-			StringBuilder sb = new StringBuilder();
-			sb.append(eb.getEmployeeCode());
-			sb.append(",");
-			sb.append(eb.getEmployeeName());
-			sb.append(",");
-			sb.append(eb.getEmployeephone());
-			sb.append(",");
-			sb.append(eb.isEmployeeLevel()?"Manager":"Mate");
-			sb.append(",");
-			sb.append(eb.getAccessTime());
-			sb.append(",");
-			sb.append(eb.getRequest().equals("A1")?"1":"-1");
-
-			bw.write(sb.toString() + "\n");
-			bw.flush();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(bw != null) {
-					bw.close();
-				}
-				if(fw != null) {
-					fw.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	public boolean setEmployeeReg(int fileIndex, EmployeeBean eb) {
+	public boolean setEmployeeHistory(EmployeeBean eb) {
 		boolean result = false;
-		file = new File(filePath[fileIndex]);
-
 		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-			StringBuilder sb = new StringBuilder();
-			sb.append(eb.getEmployeeCode());
-			sb.append(",");
-			sb.append(eb.getAccessCode());
-			sb.append(",");
-			sb.append(eb.getEmployeeName());
-			sb.append(",");
-			sb.append(eb.getEmployeephone());
-			sb.append(",");
-			sb.append(eb.isEmployeeLevel()?"Manager":"Mate");
-
-			bw.write(sb.toString() + "\n");
-			bw.flush();
-
-			result = true;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(bw != null) {
-					bw.close();
-				}
-				if(fw != null) {
-					fw.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
+			String sql = "INSERT INTO HI(HI_EMSTCODE, HI_EMCODE, HI_ACCESSDATE, HI_STATE) \n" + 
+					"VALUES(?, ?, DEFAULT, ?)";
+			if(eb.getAccessState() == -1) {
+				connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+				this.setAutoTransAction(result);
 			}
-		}
-
-		return result;
-	}
-
-	public ArrayList<EmployeeBean> getEmployeesData(int fileIndex) {
-		file = new File(filePath[fileIndex]);
-		ArrayList<EmployeeBean> employeeList = new ArrayList<EmployeeBean>();
-		EmployeeBean eb;
-		String record;
-		String[] recordArr;
-
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				recordArr = record.split(",");
-
-				eb = new EmployeeBean();
-
-				eb.setEmployeeCode(recordArr[0]);
-				eb.setAccessCode(recordArr[1]);
-				eb.setEmployeeName(recordArr[2]);
-				eb.setEmployeephone(recordArr[3]);
-				eb.setEmployeeLevel(recordArr[4].equals("Manager")?true:false);
-
-				employeeList.add(eb);
-
-			}
-
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return employeeList;
-	}
-
-	public boolean setEmployeeMod(int fileIndex, ArrayList<EmployeeBean> employeeList) {
-		boolean result = false;
-		file = new File(filePath[fileIndex]);
-		String record;
-
-		try {
-			fw = new FileWriter(file);
-			bw = new BufferedWriter(fw);
-
-			for(EmployeeBean eb : employeeList) {
-				record = eb.getEmployeeCode() + "," + eb.getAccessCode() + "," + eb.getEmployeeName() + "," +
-						eb.getEmployeephone() + "," + (eb.isEmployeeLevel()?"Manager":"Mate");
-				bw.write(record + "\n");
-				bw.flush();
+			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getStoreCode());
+			qeury.setNString(2, eb.getEmployeeCode());
+			qeury.setInt(3, eb.getAccessState());
+			
+			if(qeury.executeUpdate() > 0) {
 				result = true;
+				if(eb.getAccessState() == -1) {
+					this.endAutoTransAction(result);
+				}
+				System.out.println("기록 성공");
+			}else {
+				System.out.println("기록 실패");
 			}
-		} catch(Exception e) {
+			
+			qeury.isClosed();
+			
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
-		} finally {
-			try {
-				if(fw != null) {
-					fw.close();
-				}
-				if(bw != null) {
-					bw.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
+
 		return result;
+	}
+
+	public void setEmployeeReg(EmployeeBean eb) {
+		boolean trans = false;
+		
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			this.setAutoTransAction(trans);
+			
+			String sql = "INSERT INTO \"EM\"(EM_STCODE, EM_CODE, EM_PWD, EM_NAME, EM_LEVEL) \n" + 
+					"VALUES(?, ?, ?, ?, ?)";
+			
+			PreparedStatement qeury = connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getStoreCode());
+			qeury.setNString(2, eb.getEmployeeCode());
+			qeury.setNString(3, eb.getAccessCode());
+			qeury.setNString(4, eb.getEmployeeName());
+			qeury.setNString(5, eb.isEmployeeLevel()?"M":"A");
+			
+			trans = (qeury.executeUpdate()==1)?true:false;
+			
+			this.endAutoTransAction(trans);
+			
+			qeury.isClosed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void setEmployeeMod(EmployeeBean eb) {
+		boolean trans = false;
+		
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			this.setAutoTransAction(trans);
+			
+			String sql = "UPDATE \"EM\" SET EM_PWD = ? WHERE EM_STCODE = ? AND EM_CODE = ?";
+			
+			PreparedStatement qeury = connect.prepareStatement(sql);
+			
+			qeury.setNString(1, eb.getAccessCode());
+			qeury.setNString(2, eb.getStoreCode());
+			qeury.setNString(3, eb.getEmployeeCode());
+			
+			trans = (qeury.executeUpdate() == 1)?true:false;
+			
+			this.endAutoTransAction(trans);
+			
+			qeury.isClosed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void getGoodsInfo(int fileIndex, GoodsBean gb) {
-		file = new File(filePath[fileIndex]);
-		String record = null;
-		String[] recordArr;
-
-		gb.setResult(false);
-
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				recordArr = record.split(",");
-
-				if(gb.getGoodsCode().equals(recordArr[0])) {
-					gb.setGoodsName(recordArr[1]);
-					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
-					gb.setGoodsExpireDate(recordArr[3]);
-					gb.setGoodsAmount(1);
-					gb.setResult(true);
-
-					break;
-				}
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-
+		
 	}
 
 	public void getGoodsInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
-		file = new File(filePath[fileIndex]);
-		String record = null;
-		String[] recordArr;
-
-		gb.setResult(false);
-
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				recordArr = record.split(",");
-
-				if(gb.getGoodsCode().equals(recordArr[0])) {
-					gb.setGoodsName(recordArr[1]);
-					gb.setGoodsPrice(Integer.parseInt(recordArr[2]));
-					gb.setGoodsExpireDate(recordArr[3]);
-					for(int i=0;i<goodsListBeanArrayList.size();i++) {
-						if(gb.getGoodsCode().equals(goodsListBeanArrayList.get(i).getGoodsCode())) {
-							gb.setGoodsAmount(goodsListBeanArrayList.get(i).getGoodsAmount()+1);
-							break;
-						}else {
-							gb.setGoodsAmount(1);
-						}
-					}
-					gb.setResult(true);
-					break;
-				}
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
 	public void setSaleInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
-		file = new File(filePath[fileIndex]);
-		String record = null;
-		gb.setResult(false);
-
-		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-
-			for(GoodsBean goodsListBean : goodsListBeanArrayList) {
-				
-				record = goodsListBean.getSaleDate() + "," + goodsListBean.getGoodsCode() + "," + goodsListBean.getGoodsName() + ","
-						+ goodsListBean.getGoodsAmount() + "," + goodsListBean.getGoodsPrice() + "," + goodsListBean.getGoodsExpireDate();
-				
-				bw.write(record + "\n");
-				bw.flush();
-			}
-			gb.setResult(true);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(bw != null) {
-					bw.close();
-				}
-				if(fw != null) {
-					fw.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
 	public ArrayList<GoodsBean> getSaleInfo(int fileIndex) {
-		file = new File(filePath[fileIndex]);
 		ArrayList<GoodsBean> saleInfo = new ArrayList<GoodsBean>();
-		GoodsBean gb;
-		String record;
-		String[] recordArr;
-
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				gb = new GoodsBean();
-
-				recordArr = record.split(",");
-				gb.setSaleDate(recordArr[0]);
-				gb.setGoodsCode(recordArr[1]);
-				gb.setGoodsName(recordArr[2]);
-				gb.setGoodsAmount(Integer.parseInt(recordArr[3]));
-				gb.setGoodsPrice(Integer.parseInt(recordArr[4]));
-				gb.setGoodsExpireDate(recordArr[5]);
-
-				saleInfo.add(gb);
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		
 		return saleInfo;
 	}
 
 	public ArrayList<GoodsBean> getRefundList(int fileIndex, GoodsBean gb) {
-		file = new File(filePath[fileIndex]);
 		ArrayList<GoodsBean> refundList = new ArrayList<GoodsBean>();
-		GoodsBean recordBean;
-		String[] recordArr;
-		String record;
 		
-		gb.setResult(false);
-
-		try {
-			fr = new FileReader(file);
-			br =  new BufferedReader(fr);
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				recordArr = record.split(",");
-				if(recordArr[0].equals(gb.getSaleDate())) {
-					recordBean = new GoodsBean();
-					gb.setResult(true);
-					recordBean.setSaleDate(recordArr[0]);
-					recordBean.setGoodsCode(recordArr[1]);
-					recordBean.setGoodsName(recordArr[2]);
-					recordBean.setGoodsAmount(Integer.parseInt(recordArr[3]));
-					recordBean.setGoodsPrice(Integer.parseInt(recordArr[4]));
-					recordBean.setGoodsExpireDate(recordArr[5]);
-					refundList.add(recordBean);
-				}
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
 		return refundList;
 	}
 
 	public void setRefundList(int fileIndex, ArrayList<GoodsBean> saleInfo) {
-		file = new File(filePath[fileIndex]);
-		String record;
-
-		try {
-			fw = new FileWriter(file);
-			bw = new BufferedWriter(fw);
-
-			for(GoodsBean gb : saleInfo) {
-				record = gb.getSaleDate() + "," + gb.getGoodsCode() + "," + gb.getGoodsName() + "," + gb.getGoodsAmount() + "," +
-						gb.getGoodsPrice() + "," + gb.getGoodsExpireDate();
-				bw.write(record + "\n");
-				bw.flush();
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(fw != null) {
-					fw.close();
-				}
-				if(bw != null) {
-					bw.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
 	public void setGoodsInfo(int fileIndex, GoodsBean gb) {
-		file = new File(filePath[fileIndex]);
-		StringBuilder record;
-
-		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-			record = new StringBuilder();
-
-			record.append(gb.getGoodsCode());
-			record.append(",");
-			record.append(gb.getGoodsName());
-			record.append(",");
-			record.append(gb.getGoodsPrice());
-			record.append(",");
-			record.append(gb.getGoodsExpireDate());
-			record.append(",");
-			record.append(gb.getGoodsStock());
-			record.append(",");
-			record.append(gb.getGoodsSafetyStock());
-
-			bw.write(record.toString() + "\n");
-			bw.flush();
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(fw != null) {
-					fw.close();
-				}
-				if(bw != null) {
-					bw.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
-	public ArrayList<GoodsBean> getDailySaleInfo(int fileIndex, GoodsBean gb) {
-		file = new File(filePath[fileIndex]);
-		String record;
-		String[] recordArr;
-		GoodsBean recordBean;
-		ArrayList<GoodsBean> recordList = new ArrayList<GoodsBean>();
-
+	public ArrayList<GoodsBean> getDailySaleInfo(GoodsBean gb) {
+		ArrayList<GoodsBean> salesDataList = new ArrayList<GoodsBean>();
+		
 		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			while(true) {
-				record = br.readLine();
-				if(record == null) {
-					break;
-				}
-				recordArr = record.split(",");
-
-				if(gb.getSaleDate().equals(recordArr[0].substring(0, gb.getSaleDate().length()))) {
-					recordBean = new GoodsBean();
-
-					recordBean.setSaleDate(recordArr[0]);
-					recordBean.setGoodsCode(recordArr[1]);
-					recordBean.setGoodsName(recordArr[2]);
-					recordBean.setGoodsAmount(Integer.parseInt(recordArr[3]));
-					recordBean.setGoodsPrice(Integer.parseInt(recordArr[4]));
-					recordBean.setGoodsExpireDate(recordArr[5]);
-
-					recordList.add(recordBean);
-				}
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			String sql = "SELECT GOCODE,\r\n" + 
+					"        GONAME,\r\n" + 
+					"        GOPRICE,\r\n" + 
+					"        SUM(OTQTY) AS \"OTQTY\"\r\n" + 
+					"FROM DAILYSALES\r\n" + 
+					"WHERE ODCODE LIKE ? || '%'\r\n" + 
+					"GROUP BY GOCODE, GONAME, GOPRICE";
+			
+			PreparedStatement qeury = connect.prepareStatement(sql);
+			
+			qeury.setNString(1, gb.getSaleDate());
+			
+			ResultSet qeuryResult = qeury.executeQuery();
+			
+			while(qeuryResult.next()) {
+				GoodsBean salesData = new GoodsBean();
+				salesData.setSaleDate(gb.getSaleDate());
+				salesData.setGoodsCode(qeuryResult.getNString("GOCODE"));
+				salesData.setGoodsName(qeuryResult.getNString("GONAME"));
+				salesData.setGoodsPrice(qeuryResult.getInt("GOPRICE"));
+				salesData.setGoodsAmount(qeuryResult.getInt("OTQTY"));
+				
+				salesDataList.add(salesData);
 			}
-		}catch(Exception e) {
+			
+			connect.isClosed();
+			qeury.isClosed();
+			qeuryResult.isClosed();
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-			try {
-				if(fr != null) {
-					fr.close();
-				}
-				if(br != null) {
-					br.close();
-				}
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
-		return recordList;
+
+		return salesDataList;
+	}
+	
+	public ArrayList<GoodsBean> getBestDailySaleInfo(GoodsBean gb) {
+		ArrayList<GoodsBean> salesDataList = new ArrayList<GoodsBean>();
+		
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			String sql = "SELECT GOCODE, \n" + 
+					"        GONAME, \n" + 
+					"        GOPRICE, \n" + 
+					"        OTQTY \n" + 
+					"FROM (SELECT SUBSTR(ODCODE, 1 ,6) AS \"ODCODE\", \n" + 
+					"            GOCODE AS \"GOCODE\", \n" + 
+					"            GONAME AS \"GONAME\", \n" + 
+					"            GOPRICE AS \"GOPRICE\", \n" + 
+					"            SUM(OTQTY) AS \"OTQTY\" \n" + 
+					"        FROM DAILYSALES  \n" + 
+					"        WHERE ODCODE LIKE ? || '%' \n" + 
+					"        GROUP BY SUBSTR(ODCODE, 1 ,6), GOCODE, GONAME, GOPRICE) \n" + 
+					"WHERE (ODCODE, OTQTY) IN (SELECT ODCODE, \n" + 
+					"                                    MAX(OTQTY) \n" + 
+					"                            FROM (SELECT SUBSTR(ODCODE, 1 ,6) AS \"ODCODE\", \n" + 
+					"                                            SUM(OTQTY) AS \"OTQTY\" \n" + 
+					"                                    FROM DAILYSALES \n" + 
+					"                                    WHERE ODCODE LIKE ? || '%' \n" + 
+					"                                    GROUP BY SUBSTR(ODCODE, 1 ,6), GOPRICE) \n" + 
+					"                            GROUP BY ODCODE)";
+			
+			PreparedStatement qeury = connect.prepareStatement(sql);
+			
+			qeury.setNString(1, gb.getSaleDate());
+			qeury.setNString(2, gb.getSaleDate());
+			
+			ResultSet qeuryResult = qeury.executeQuery();
+			
+			while(qeuryResult.next()) {
+				GoodsBean salesData = new GoodsBean();
+				salesData.setSaleDate(gb.getSaleDate());
+				salesData.setGoodsCode(qeuryResult.getNString("GOCODE"));
+				salesData.setGoodsName(qeuryResult.getNString("GONAME"));
+				salesData.setGoodsPrice(qeuryResult.getInt("GOPRICE"));
+				salesData.setGoodsAmount(qeuryResult.getInt("OTQTY"));
+				
+				salesDataList.add(salesData);
+			}
+			
+			connect.isClosed();
+			qeury.isClosed();
+			qeuryResult.isClosed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return salesDataList;
 	}
 
 }
