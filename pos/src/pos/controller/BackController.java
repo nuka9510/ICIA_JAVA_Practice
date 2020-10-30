@@ -125,17 +125,17 @@ public class BackController {
 
 		gb.setRequest(saleInfo[0]);
 		gb.setState(saleInfo[1]);
+		gb.setStoreCode(saleInfo[2]);
+		gb.setEmployeeCode(saleInfo[3]);
+		gb.setCustomerCode("CM001");
 
 		for(int i=0;i<goodsList.length;i++) {
 			goodsListBean = new GoodsBean();
 
-			goodsListBean.setSaleDate(goodsList[goodsList.length-1][0]);
 			goodsListBean.setGoodsCode(goodsList[i][1]);
-			goodsListBean.setGoodsName(goodsList[i][2]);
 			goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
-			goodsListBean.setGoodsPrice(Integer.parseInt(goodsList[i][4]));
-			goodsListBean.setGoodsExpireDate(goodsList[i][5]);
-
+			goodsListBean.setState(saleInfo[1]);
+			
 			goodsListBeanArrayList.add(goodsListBean);
 		}
 
@@ -221,6 +221,7 @@ public class BackController {
 
 		gb.setRequest(saleInfo[0]);
 		gb.setSaleDate(saleInfo[1]);
+		gb.setStoreCode(saleInfo[2]);
 
 		manage = new Management();
 

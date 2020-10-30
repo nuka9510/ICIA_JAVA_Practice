@@ -60,7 +60,7 @@ public class FrontController {
 										if(saleInfo == null) {
 											break;
 										}
-
+										
 										switch(saleInfo[0]) {
 										case "S1":
 											goodsInfo = bc.saleGoodsInfo(saleInfo);
@@ -281,7 +281,7 @@ public class FrontController {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
 		String date = null;
-		String[] saleInfo = new String[2];
+		String[] saleInfo = new String[4];
 		String select;
 		int totalCost = 0;
 
@@ -306,7 +306,7 @@ public class FrontController {
 		this.print("]\n\n--------------------------------------------------\n" +
 				date + "\n" + 
 				"--------------------------------------------------\n" +
-				"결제번호\t상품코드\t상품명\t수량\t단가\n" + 
+				"순번\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
 
 		for(int i=0;i<goodsList.length;i++) {
@@ -328,7 +328,9 @@ public class FrontController {
 		} else {
 			if(select.equals("2")) {
 				saleInfo[0] = "S2";
-				saleInfo[1] = "S";
+				saleInfo[1] = "P";
+				saleInfo[2] = userInfo[0];
+				saleInfo[3] = userInfo[2];
 			} else {
 				this.print("\n\n상품코드 : ");
 				saleInfo[1] = sc.next();
@@ -366,7 +368,7 @@ public class FrontController {
 			if(i<preGoodsList.length) {
 				goodsList[i] = preGoodsList[i];
 				if(goodsInfo[1].equals(preGoodsList[i][1])) {
-					goodsList[i][3] = goodsInfo[3];
+					goodsList[i][3] = (Integer.parseInt(goodsList[i][3]) + Integer.parseInt(goodsInfo[3])) + "";
 				}
 			} else {
 				goodsList[i] = goodsInfo;
@@ -379,7 +381,7 @@ public class FrontController {
 	private boolean isExpireDate(String[] goodsInfo) {
 		boolean result = true;
 
-		if(Integer.parseInt(goodsInfo[5]) < Integer.parseInt(goodsInfo[0].substring(0, 8))) {
+		if(Integer.parseInt(goodsInfo[5].substring(0, 8)) < Integer.parseInt(goodsInfo[0].substring(0, 8))) {
 			result = false;
 		}
 
@@ -414,9 +416,10 @@ public class FrontController {
 		this.print("]\n\n--------------------------------------------------\n" + 
 				date + "\n" + 
 				"--------------------------------------------------\n" +
-				"\t상품코드\t상품명\t수량\t단가\n" + 
+				"순번\t상품코드\t상품명\t수량\t단가\n" + 
 				"--------------------------------------------------\n"); 
 		for(int i=0;i<goodsList.length;i++) {
+			this.print((i+1)+"");
 			for(int j=1;j<goodsList[i].length-1;j++) {
 				this.print("\t" + goodsList[i][j]);
 			}
@@ -676,11 +679,11 @@ public class FrontController {
 	}
 
 	private String[] dailySaleInfo(String title, String[] userInfo, String salesManage) {
-		String[] result = new String[2];
+		String[] result = new String[3];
 		System.out.println(salesManage);
 		
 		result[0] = null;
-		
+		result[2] = userInfo[0];
 		this.print(title);
 		
 		if(salesManage.equals("3")) {

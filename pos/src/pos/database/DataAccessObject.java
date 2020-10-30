@@ -45,7 +45,7 @@ public class DataAccessObject {
 		}finally {
 			try {
 				if(!this.connect.isClosed()) {
-					this.connect.isClosed();
+					this.connect.close();
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -66,20 +66,20 @@ public class DataAccessObject {
 						"FROM \"EM\" \n" + 
 						"WHERE EM_STCODE = ? AND EM_CODE = ?";
 			
-			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			PreparedStatement query = this.connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getStoreCode());
-			qeury.setNString(2, eb.getEmployeeCode());
+			query.setNString(1, eb.getStoreCode());
+			query.setNString(2, eb.getEmployeeCode());
 			
 
-			ResultSet qeuryResult = qeury.executeQuery();
+			ResultSet queryResult = query.executeQuery();
 			
-			while(qeuryResult.next()) {
-				result = (qeuryResult.getInt("ISEMCODE") == 1)?true:false;
+			while(queryResult.next()) {
+				result = (queryResult.getInt("ISEMCODE") == 1)?true:false;
 			}
 			
-			qeury.isClosed();
-			qeuryResult.isClosed();
+			query.close();
+			queryResult.close();
 			
 		} catch (SQLException e) {
 			System.out.println("서버 접속 실패");
@@ -97,21 +97,21 @@ public class DataAccessObject {
 						"FROM \"EM\" \n" + 
 						"WHERE EM_STCODE = ? AND EM_CODE = ? AND EM_PWD = ?";
 			
-			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			PreparedStatement query = this.connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getStoreCode());
-			qeury.setNString(2, eb.getEmployeeCode());
-			qeury.setNString(3, eb.getAccessCode());
+			query.setNString(1, eb.getStoreCode());
+			query.setNString(2, eb.getEmployeeCode());
+			query.setNString(3, eb.getAccessCode());
 			
 
-			ResultSet qeuryResult = qeury.executeQuery();
+			ResultSet queryResult = query.executeQuery();
 			
-			while(qeuryResult.next()) {
-				result = (qeuryResult.getInt("ISACCESS") == 1)?true:false;
+			while(queryResult.next()) {
+				result = (queryResult.getInt("ISACCESS") == 1)?true:false;
 			}
 			
-			qeury.isClosed();
-			qeuryResult.isClosed();
+			query.close();
+			queryResult.close();
 			
 		} catch (SQLException e) {
 			System.out.println("서버 접속 실패");
@@ -137,26 +137,26 @@ public class DataAccessObject {
 					"        AND HI.HI_EMCODE = ? \n" + 
 					"GROUP BY ST.ST_NAME, \"EM\".EM_NAME, \"EM\".EM_LEVEL, HI.HI_EMSTCODE, HI.HI_EMCODE";
 			
-			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			PreparedStatement query = this.connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getStoreCode());
-			qeury.setNString(2, eb.getEmployeeCode());
+			query.setNString(1, eb.getStoreCode());
+			query.setNString(2, eb.getEmployeeCode());
 			
-			ResultSet qeuryResult;
+			ResultSet queryResult;
 			
-			qeuryResult = qeury.executeQuery();
+			queryResult = query.executeQuery();
 			
-			while(qeuryResult.next()) {
-				eb.setStoreCode(qeuryResult.getNString("STCODE"));
-				eb.setStoreName(qeuryResult.getNString("STNAME"));
-				eb.setEmployeeCode(qeuryResult.getNString("EMCODE"));
-				eb.setEmployeeName(qeuryResult.getNString("EMNAME"));
-				eb.setEmployeeLevel((qeuryResult.getNString("EMLEVEL").equals("M")? true : false));
-				eb.setAccessTime(qeuryResult.getNString("HIACCESSDATE"));
+			while(queryResult.next()) {
+				eb.setStoreCode(queryResult.getNString("STCODE"));
+				eb.setStoreName(queryResult.getNString("STNAME"));
+				eb.setEmployeeCode(queryResult.getNString("EMCODE"));
+				eb.setEmployeeName(queryResult.getNString("EMNAME"));
+				eb.setEmployeeLevel((queryResult.getNString("EMLEVEL").equals("M")? true : false));
+				eb.setAccessTime(queryResult.getNString("HIACCESSDATE"));
 			}
 			
-			qeury.isClosed();
-			qeuryResult.isClosed();
+			query.close();
+			queryResult.close();
 			
 		} catch (SQLException e) {
 			System.out.println("서버 접속 실패");
@@ -174,13 +174,13 @@ public class DataAccessObject {
 				connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
 				this.setAutoTransAction(result);
 			}
-			PreparedStatement qeury = this.connect.prepareStatement(sql);
+			PreparedStatement query = this.connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getStoreCode());
-			qeury.setNString(2, eb.getEmployeeCode());
-			qeury.setInt(3, eb.getAccessState());
+			query.setNString(1, eb.getStoreCode());
+			query.setNString(2, eb.getEmployeeCode());
+			query.setInt(3, eb.getAccessState());
 			
-			if(qeury.executeUpdate() > 0) {
+			if(query.executeUpdate() > 0) {
 				result = true;
 				if(eb.getAccessState() == -1) {
 					this.endAutoTransAction(result);
@@ -190,7 +190,7 @@ public class DataAccessObject {
 				System.out.println("기록 실패");
 			}
 			
-			qeury.isClosed();
+			query.close();
 			
 		} catch (SQLException e) {
 			System.out.println("서버 접속 실패");
@@ -205,25 +205,34 @@ public class DataAccessObject {
 		
 		try {
 			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			System.out.println("서버 접속 성공");
 			this.setAutoTransAction(trans);
 			
 			String sql = "INSERT INTO \"EM\"(EM_STCODE, EM_CODE, EM_PWD, EM_NAME, EM_LEVEL) \n" + 
 					"VALUES(?, ?, ?, ?, ?)";
 			
-			PreparedStatement qeury = connect.prepareStatement(sql);
+			PreparedStatement query = connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getStoreCode());
-			qeury.setNString(2, eb.getEmployeeCode());
-			qeury.setNString(3, eb.getAccessCode());
-			qeury.setNString(4, eb.getEmployeeName());
-			qeury.setNString(5, eb.isEmployeeLevel()?"M":"A");
+			query.setNString(1, eb.getStoreCode());
+			query.setNString(2, eb.getEmployeeCode());
+			query.setNString(3, eb.getAccessCode());
+			query.setNString(4, eb.getEmployeeName());
+			query.setNString(5, eb.isEmployeeLevel()?"M":"A");
 			
-			trans = (qeury.executeUpdate()==1)?true:false;
+			trans = (query.executeUpdate()==1)?true:false;
+			
+			if(trans) {
+				System.out.println("기록 성공");
+			}else {
+				System.out.println("기록 실패");
+			}
 			
 			this.endAutoTransAction(trans);
 			
-			qeury.isClosed();
+			query.close();
 		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
 		}
 		
@@ -234,36 +243,186 @@ public class DataAccessObject {
 		
 		try {
 			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			System.out.println("서버 접속 성공");
 			this.setAutoTransAction(trans);
 			
 			String sql = "UPDATE \"EM\" SET EM_PWD = ? WHERE EM_STCODE = ? AND EM_CODE = ?";
 			
-			PreparedStatement qeury = connect.prepareStatement(sql);
+			PreparedStatement query = connect.prepareStatement(sql);
 			
-			qeury.setNString(1, eb.getAccessCode());
-			qeury.setNString(2, eb.getStoreCode());
-			qeury.setNString(3, eb.getEmployeeCode());
+			query.setNString(1, eb.getAccessCode());
+			query.setNString(2, eb.getStoreCode());
+			query.setNString(3, eb.getEmployeeCode());
 			
-			trans = (qeury.executeUpdate() == 1)?true:false;
+			trans = (query.executeUpdate() == 1)?true:false;
+			
+			if(trans) {
+				System.out.println("기록 성공");
+			}else {
+				System.out.println("기록 실패");
+			}
 			
 			this.endAutoTransAction(trans);
 			
-			qeury.isClosed();
+			query.close();
 		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
 		}
 	}
 
-	public void getGoodsInfo(int fileIndex, GoodsBean gb) {
-		
+	public void getGoodsInfo(GoodsBean gb) {
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			System.out.println("서버 접속 성공");
+			
+			String sql = "SELECT GOCODE, \n" + 
+					"        GONAME, \n" + 
+					"        GOPRICE, \n" + 
+					"        TO_CHAR(MAX(EXPIRE), 'YYYYMMDDHH24MISS') AS \"EXPIRE\" \n" + 
+					"FROM (SELECT SC.SC_GOCODE AS \"GOCODE\", \n" + 
+					"                GO.GO_NAME AS \"GONAME\", \n" + 
+					"                GO.GO_PRICE AS \"GOPRICE\", \n" + 
+					"                SUM(SC.SC_STOCKS) AS \"STOCK\", \n" + 
+					"                SC.SC_EXPIRE AS \"EXPIRE\" \n" + 
+					"        FROM SC INNER JOIN GO ON SC.SC_GOCODE = GO.GO_CODE \n" + 
+					"        GROUP BY SC.SC_GOCODE, GO.GO_NAME, GO.GO_PRICE, SC.SC_EXPIRE) \n" + 
+					"WHERE GOCODE = ? AND STOCK > 0 \n" + 
+					"GROUP BY GOCODE, GONAME, GOPRICE";
+			
+			PreparedStatement query = connect.prepareStatement(sql);
+			
+			query.setNString(1, gb.getGoodsCode());
+			
+			ResultSet queryResult;
+			queryResult = query.executeQuery();
+			
+			while(queryResult.next()) {
+				gb.setResult(true);
+				gb.setGoodsCode(queryResult.getNString("GOCODE"));
+				gb.setGoodsName(queryResult.getNString("GONAME"));
+				gb.setGoodsPrice(queryResult.getInt("GOPRICE"));
+				gb.setGoodsExpireDate(queryResult.getNString("EXPIRE"));
+				gb.setGoodsAmount(1);
+			}
+			
+			query.close();
+			queryResult.close();
+			connect.close();
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
+			e.printStackTrace();
+		}
 	}
 
 	public void getGoodsInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
 		
 	}
+	
+	public void setOrderInfo(GoodsBean gb) {
+		boolean trans = false;
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "SON", "0000");
+			
+			System.out.println("서버 접속 성공");
+			this.setAutoTransAction(trans);
+			
+			String sql = " INSERT INTO OD(OD_CODE, OD_EMSTCODE, OD_EMCODE, OD_CMCODE, OD_STATE)\n" + 
+					" VALUES(DEFAULT, ?, ?, ?, ?)";
+			
+			PreparedStatement query = connect.prepareStatement(sql);
+			
+			query.setNString(1, gb.getStoreCode());
+			query.setNString(2, gb.getEmployeeCode());
+			query.setNString(3, gb.getCustomerCode());
+			query.setNString(4, gb.getState());
+			
+			trans = (query.executeUpdate() == 1)?true:false;
+			
+			if(trans) {
+				System.out.println("기록 성공");
+			}else {
+				System.out.println("기록 실패");
+			}
+			
+			this.endAutoTransAction(trans);
+			
+			query.close();
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
+			e.printStackTrace();
+		}
+	}
+	
+	public void getOrderCode(GoodsBean gb) {
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
+			
+			System.out.println("서버 접속 성공");
+			
+			String sql = "SELECT TO_CHAR(MAX(OD_CODE), 'YYYYMMDDHH24MISS') AS \"ODCODE\" \n" + 
+					"FROM OD \n" + 
+					"WHERE OD_EMSTCODE = ? AND OD_EMCODE = ? AND OD_CMCODE = ? AND OD_STATE = ? \n";
+			
+			PreparedStatement query = connect.prepareStatement(sql);
+			
+			query.setNString(1, gb.getStoreCode());
+			query.setNString(2, gb.getEmployeeCode());
+			query.setNString(3, gb.getCustomerCode());
+			query.setNString(4, gb.getState());
+			
+			ResultSet queryResult;
+			
+			queryResult = query.executeQuery();
+			
+			while(queryResult.next()) {
+				gb.setSaleDate(queryResult.getNString("ODCODE"));
+			}
+			
+			query.close();
+			queryResult.close();
+			connect.close();
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
+			e.printStackTrace();
+		}
+	}
 
-	public void setSaleInfo(int fileIndex, GoodsBean gb, ArrayList<GoodsBean> goodsListBeanArrayList) {
-		
+	public void setSaleInfo(GoodsBean gb, GoodsBean goodsList) {
+		boolean trans = false;
+		try {
+			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "SON", "0000");
+			
+			System.out.println("서버 접속 성공");
+			this.setAutoTransAction(trans);
+			
+			String sql = " INSERT INTO OT(OT_ODCODE, OT_GOCODE, OT_QTY, OT_STATE)\r\n" + 
+					" VALUES(TO_DATE(?, 'YYYYMMDDHH24MISS'), ?, ?, ?)";
+			
+			PreparedStatement query = connect.prepareStatement(sql);
+			
+			query.setNString(1, gb.getSaleDate());
+			query.setNString(2, goodsList.getGoodsCode());
+			query.setInt(3, goodsList.getGoodsAmount());
+			query.setNString(4, goodsList.getState());
+			
+			trans = (query.executeUpdate() == 1)?true:false;
+			
+			if(trans) {
+				System.out.println("기록 성공");
+			}else {
+				System.out.println("기록 실패");
+			}
+			
+			this.endAutoTransAction(trans);
+			
+			query.close();
+		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
+			e.printStackTrace();
+		}
 	}
 
 	public ArrayList<GoodsBean> getSaleInfo(int fileIndex) {
@@ -292,35 +451,39 @@ public class DataAccessObject {
 		try {
 			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
 			
-			String sql = "SELECT GOCODE,\r\n" + 
-					"        GONAME,\r\n" + 
-					"        GOPRICE,\r\n" + 
-					"        SUM(OTQTY) AS \"OTQTY\"\r\n" + 
-					"FROM DAILYSALES\r\n" + 
-					"WHERE ODCODE LIKE ? || '%'\r\n" + 
+			System.out.println("서버 접속 성공");
+			
+			String sql = "SELECT GOCODE, \n" + 
+					"        GONAME, \n" + 
+					"        GOPRICE, \n" + 
+					"        SUM(OTQTY) AS \"OTQTY\" \n" + 
+					"FROM DAILYSALES \n" + 
+					"WHERE ODCODE LIKE ? || '%' AND STCODE = ?\n" + 
 					"GROUP BY GOCODE, GONAME, GOPRICE";
 			
-			PreparedStatement qeury = connect.prepareStatement(sql);
+			PreparedStatement query = connect.prepareStatement(sql);
 			
-			qeury.setNString(1, gb.getSaleDate());
+			query.setNString(1, gb.getSaleDate());
+			query.setNString(2, gb.getStoreCode());
 			
-			ResultSet qeuryResult = qeury.executeQuery();
+			ResultSet queryResult = query.executeQuery();
 			
-			while(qeuryResult.next()) {
+			while(queryResult.next()) {
 				GoodsBean salesData = new GoodsBean();
 				salesData.setSaleDate(gb.getSaleDate());
-				salesData.setGoodsCode(qeuryResult.getNString("GOCODE"));
-				salesData.setGoodsName(qeuryResult.getNString("GONAME"));
-				salesData.setGoodsPrice(qeuryResult.getInt("GOPRICE"));
-				salesData.setGoodsAmount(qeuryResult.getInt("OTQTY"));
+				salesData.setGoodsCode(queryResult.getNString("GOCODE"));
+				salesData.setGoodsName(queryResult.getNString("GONAME"));
+				salesData.setGoodsPrice(queryResult.getInt("GOPRICE"));
+				salesData.setGoodsAmount(queryResult.getInt("OTQTY"));
 				
 				salesDataList.add(salesData);
 			}
 			
-			connect.isClosed();
-			qeury.isClosed();
-			qeuryResult.isClosed();
+			connect.close();
+			query.close();
+			queryResult.close();
 		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
 		}
 
@@ -333,6 +496,8 @@ public class DataAccessObject {
 		try {
 			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "FANA", "0000");
 			
+			System.out.println("서버 접속 성공");
+			
 			String sql = "SELECT GOCODE, \n" + 
 					"        GONAME, \n" + 
 					"        GOPRICE, \n" + 
@@ -343,39 +508,42 @@ public class DataAccessObject {
 					"            GOPRICE AS \"GOPRICE\", \n" + 
 					"            SUM(OTQTY) AS \"OTQTY\" \n" + 
 					"        FROM DAILYSALES  \n" + 
-					"        WHERE ODCODE LIKE ? || '%' \n" + 
+					"        WHERE ODCODE LIKE ? || '%' AND STCODE = ? \n" + 
 					"        GROUP BY SUBSTR(ODCODE, 1 ,6), GOCODE, GONAME, GOPRICE) \n" + 
 					"WHERE (ODCODE, OTQTY) IN (SELECT ODCODE, \n" + 
 					"                                    MAX(OTQTY) \n" + 
 					"                            FROM (SELECT SUBSTR(ODCODE, 1 ,6) AS \"ODCODE\", \n" + 
 					"                                            SUM(OTQTY) AS \"OTQTY\" \n" + 
 					"                                    FROM DAILYSALES \n" + 
-					"                                    WHERE ODCODE LIKE ? || '%' \n" + 
+					"                                    WHERE ODCODE LIKE ? || '%' AND STCODE = ? \n" + 
 					"                                    GROUP BY SUBSTR(ODCODE, 1 ,6), GOPRICE) \n" + 
 					"                            GROUP BY ODCODE)";
 			
-			PreparedStatement qeury = connect.prepareStatement(sql);
+			PreparedStatement query = connect.prepareStatement(sql);
 			
-			qeury.setNString(1, gb.getSaleDate());
-			qeury.setNString(2, gb.getSaleDate());
+			query.setNString(1, gb.getSaleDate());
+			query.setNString(2, gb.getStoreCode());
+			query.setNString(3, gb.getSaleDate());
+			query.setNString(4, gb.getStoreCode());
 			
-			ResultSet qeuryResult = qeury.executeQuery();
+			ResultSet queryResult = query.executeQuery();
 			
-			while(qeuryResult.next()) {
+			while(queryResult.next()) {
 				GoodsBean salesData = new GoodsBean();
 				salesData.setSaleDate(gb.getSaleDate());
-				salesData.setGoodsCode(qeuryResult.getNString("GOCODE"));
-				salesData.setGoodsName(qeuryResult.getNString("GONAME"));
-				salesData.setGoodsPrice(qeuryResult.getInt("GOPRICE"));
-				salesData.setGoodsAmount(qeuryResult.getInt("OTQTY"));
+				salesData.setGoodsCode(queryResult.getNString("GOCODE"));
+				salesData.setGoodsName(queryResult.getNString("GONAME"));
+				salesData.setGoodsPrice(queryResult.getInt("GOPRICE"));
+				salesData.setGoodsAmount(queryResult.getInt("OTQTY"));
 				
 				salesDataList.add(salesData);
 			}
 			
-			connect.isClosed();
-			qeury.isClosed();
-			qeuryResult.isClosed();
+			connect.close();
+			query.close();
+			queryResult.close();
 		} catch (SQLException e) {
+			System.out.println("서버 접속 실패");
 			e.printStackTrace();
 		}
 

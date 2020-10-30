@@ -12,6 +12,9 @@ public class GoodsBean {
 	private String goodsExpireDate;
 	private String saleDate;
 	private String state;
+	private String storeCode;
+	private String employeeCode;
+	private String customerCode;
 	private boolean result;
 	
 	public String getRequest() {
@@ -79,6 +82,24 @@ public class GoodsBean {
 	}
 	public void setResult(boolean result) {
 		this.result = result;
+	}
+	public String getStoreCode() {
+		return storeCode;
+	}
+	public void setStoreCode(String storeCode) {
+		this.storeCode = storeCode;
+	}
+	public String getEmployeeCode() {
+		return employeeCode;
+	}
+	public void setEmployeeCode(String employeeCode) {
+		this.employeeCode = employeeCode;
+	}
+	public String getCustomerCode() {
+		return customerCode;
+	}
+	public void setCustomerCode(String customerCode) {
+		this.customerCode = customerCode;
 	}
 	
 }
