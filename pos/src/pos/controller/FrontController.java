@@ -16,11 +16,11 @@ public class FrontController {
 
 	private void init(String title) {
 		String[][] goodsList = null;
-		String[][] refundList;
+		//String[][] refundList;
 		String[] userInfo = null;
 		String[] saleInfo;
 		String[] goodsInfo;
-		String[] refundInfo;
+		//String[] refundInfo;
 		String selectService;
 		String empoyeeManage;
 		String salesManage;
@@ -84,6 +84,7 @@ public class FrontController {
 							}
 						}
 						break;
+						/*
 					case "2":
 						refundInfo = this.refund(title, userInfo);
 						refundList = bc.getRefundList(refundInfo);
@@ -108,6 +109,7 @@ public class FrontController {
 							break;
 						}
 						break;
+						*/
 					case "3":
 
 						while(true) {

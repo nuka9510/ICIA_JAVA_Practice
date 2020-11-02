@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import pos.database.EmployeeBean;
 import pos.database.GoodsBean;
+import pos.database.OrderBean;
+import pos.database.OrderDetailBean;
 import pos.service.Access;
 import pos.service.Management;
 import pos.service.Sale;
@@ -118,32 +120,31 @@ public class BackController {
 	}
 
 	public void setSaleInfo(String[] saleInfo, String[][] goodsList) {
-		ArrayList<GoodsBean> goodsListBeanArrayList = new ArrayList<GoodsBean>();
+		ArrayList<OrderDetailBean> goodsListBeanArrayList = new ArrayList<OrderDetailBean>();
 		Sale sale;
-		GoodsBean gb = new GoodsBean();
-		GoodsBean goodsListBean;
+		OrderBean odb = new OrderBean();
 
-		gb.setRequest(saleInfo[0]);
-		gb.setState(saleInfo[1]);
-		gb.setStoreCode(saleInfo[2]);
-		gb.setEmployeeCode(saleInfo[3]);
-		gb.setCustomerCode("CM001");
+		odb.setRequest(saleInfo[0]);
+		odb.setOdState(saleInfo[1]);
+		odb.setStCode(saleInfo[2]);
+		odb.setEmCode(saleInfo[3]);
+		odb.setCmCode("CM001");
 
 		for(int i=0;i<goodsList.length;i++) {
-			goodsListBean = new GoodsBean();
+			OrderDetailBean otb = new OrderDetailBean();
 
-			goodsListBean.setGoodsCode(goodsList[i][1]);
-			goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
-			goodsListBean.setState(saleInfo[1]);
+			otb.setGoCode(goodsList[i][1]);
+			otb.setQty(Integer.parseInt(goodsList[i][3]));
+			otb.setOtState(saleInfo[1]);
 			
-			goodsListBeanArrayList.add(goodsListBean);
+			goodsListBeanArrayList.add(otb);
 		}
 
 		sale = new Sale();
 
-		sale.entrance(gb, goodsListBeanArrayList);
+		sale.entrance(odb, goodsListBeanArrayList);
 	}
-
+/*
 	public String[][] getRefundList(String[] refundInfo) {
 		String[][] refundList = null;
 		ArrayList<GoodsBean> refundListArrayList;
@@ -175,7 +176,7 @@ public class BackController {
 	public void setRefundList(String[] refundInfo, String[][] goodsList) {
 		GoodsBean gb = new GoodsBean();
 		GoodsBean goodsListBean;
-		ArrayList<GoodsBean> goodsListBeanArrayList = new ArrayList<GoodsBean>();
+		ArrayList<OrderDetailBean> goodsListBeanArrayList = new ArrayList<OrderDetailBean>();
 
 		Sale sale = new Sale();
 
@@ -194,9 +195,9 @@ public class BackController {
 			goodsListBeanArrayList.add(goodsListBean);
 		}
 
-		sale.entrance(gb, goodsListBeanArrayList);
+		sale.entrance(odb, goodsListBeanArrayList);
 	}
-
+*/
 	public void goodsReg(String[] goodsInfo) {
 		GoodsBean gb = new GoodsBean();
 		Management manage;
@@ -214,18 +215,18 @@ public class BackController {
 	}
 
 	public String[][] getDailySaleInfo(String[] saleInfo) {
-		GoodsBean gb = new GoodsBean();
+		OrderBean odb = new OrderBean();
 		Management manage;
 		String[][] dailySaleInfo;
 		ArrayList<GoodsBean> dailySaleInfoArrayList;
 
-		gb.setRequest(saleInfo[0]);
-		gb.setSaleDate(saleInfo[1]);
-		gb.setStoreCode(saleInfo[2]);
+		odb.setRequest(saleInfo[0]);
+		odb.setOdCode(saleInfo[1]);
+		odb.setStCode(saleInfo[2]);
 
 		manage = new Management();
 
-		dailySaleInfoArrayList = manage.entrance(gb);
+		dailySaleInfoArrayList = manage.entrance(odb);
 
 		dailySaleInfo = new String[dailySaleInfoArrayList.size()][6];
 

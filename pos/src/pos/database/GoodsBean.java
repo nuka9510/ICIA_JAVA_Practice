@@ -3,6 +3,7 @@ package pos.database;
 public class GoodsBean {
 
 	private String request;
+	private String saleDate;
 	private String goodsCode;
 	private String goodsName;
 	private int goodsPrice;
@@ -10,11 +11,6 @@ public class GoodsBean {
 	private int goodsStock;
 	private int goodsSafetyStock;
 	private String goodsExpireDate;
-	private String saleDate;
-	private String state;
-	private String storeCode;
-	private String employeeCode;
-	private String customerCode;
 	private boolean result;
 	
 	public String getRequest() {
@@ -65,41 +61,17 @@ public class GoodsBean {
 	public void setGoodsExpireDate(String goodsExpireDate) {
 		this.goodsExpireDate = goodsExpireDate;
 	}
-	public String getSaleDate() {
-		return saleDate;
-	}
-	public void setSaleDate(String saleDate) {
-		this.saleDate = saleDate;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
 	public boolean isResult() {
 		return result;
 	}
 	public void setResult(boolean result) {
 		this.result = result;
 	}
-	public String getStoreCode() {
-		return storeCode;
+	public String getSaleDate() {
+		return saleDate;
 	}
-	public void setStoreCode(String storeCode) {
-		this.storeCode = storeCode;
-	}
-	public String getEmployeeCode() {
-		return employeeCode;
-	}
-	public void setEmployeeCode(String employeeCode) {
-		this.employeeCode = employeeCode;
-	}
-	public String getCustomerCode() {
-		return customerCode;
-	}
-	public void setCustomerCode(String customerCode) {
-		this.customerCode = customerCode;
+	public void setSaleDate(String saleDate) {
+		this.saleDate = saleDate;
 	}
 	
 }
