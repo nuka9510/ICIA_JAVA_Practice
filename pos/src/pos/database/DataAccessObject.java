@@ -303,13 +303,10 @@ public class DataAccessObject {
 
 	}
 
-	public void setOrderInfo(OrderBean odb) {
-		boolean trans = false;
+	public boolean setOrderInfo(OrderBean odb) {
+		boolean tran = false;
 		try {
 			connect = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.43:1521:xe", "SON", "0000");
-
-			System.out.println("서버 접속 성공");
-			this.setAutoTransAction(trans);
 
 			String sql = " INSERT INTO OD(OD_CODE, OD_EMSTCODE, OD_EMCODE, OD_CMCODE, OD_STATE)\n" + 
 					" VALUES(DEFAULT, ?, ?, ?, ?)";
@@ -321,55 +318,54 @@ public class DataAccessObject {
 			query.setNString(3, odb.getCmCode());
 			query.setNString(4, odb.getOdState());
 
-			trans = (query.executeUpdate() == 1)?true:false;
+			tran = (query.executeUpdate() == 1)?true:false;
 
-			if(trans) {
+			if(tran) {
 				System.out.println("기록 성공");
 			}else {
 				System.out.println("기록 실패");
 			}
 
-			this.endAutoTransAction(trans);
-
 			query.close();
 		} catch (SQLException e) {
 			System.out.println("서버 접속 실패");
 			e.printStackTrace();
 		}
+		return tran;
 	}
 
-	public void getOrderCode(OrderBean odb) {
-		try {
-
-			System.out.println("서버 접속 성공");
-
-			String sql = "SELECT TO_CHAR(MAX(OD_CODE), 'YYYYMMDDHH24MISS') AS \"ODCODE\" \n" + 
-					"FROM OD \n" + 
-					"WHERE OD_EMSTCODE = ? AND OD_EMCODE = ? AND OD_CMCODE = ? AND OD_STATE = ? \n";
-
-			PreparedStatement query = connect.prepareStatement(sql);
-
-			query.setNString(1, odb.getStCode());
-			query.setNString(2, odb.getEmCode());
-			query.setNString(3, odb.getCmCode());
-			query.setNString(4, odb.getOdState());
-
-			ResultSet queryResult;
-
-			queryResult = query.executeQuery();
-
-			while(queryResult.next()) {
-				odb.setOdCode(queryResult.getNString("ODCODE"));
-			}
-
-			query.close();
-			queryResult.close();
-			connect.close();
-		} catch (SQLException e) {
-			System.out.println("서버 접속 실패");
-			e.printStackTrace();
-		}
-	}
+//	public void getOrderCode(OrderBean odb) {
+//		try {
+//
+//			System.out.println("서버 접속 성공");
+//
+//			String sql = "SELECT TO_CHAR(MAX(OD_CODE), 'YYYYMMDDHH24MISS') AS \"ODCODE\" \n" + 
+//					"FROM OD \n" + 
+//					"WHERE OD_EMSTCODE = ? AND OD_EMCODE = ? AND OD_CMCODE = ? AND OD_STATE = ? \n";
+//
+//			PreparedStatement query = connect.prepareStatement(sql);
+//
+//			query.setNString(1, odb.getStCode());
+//			query.setNString(2, odb.getEmCode());
+//			query.setNString(3, odb.getCmCode());
+//			query.setNString(4, odb.getOdState());
+//
+//			ResultSet queryResult;
+//
+//			queryResult = query.executeQuery();
+//
+//			while(queryResult.next()) {
+//				odb.setOdCode(queryResult.getNString("ODCODE"));
+//			}
+//
+//			query.close();
+//			queryResult.close();
+//			connect.close();
+//		} catch (SQLException e) {
+//			System.out.println("서버 접속 실패");
+//			e.printStackTrace();
+//		}
+//	}
 
 	public boolean regOrder(OrderBean odb) {
 		boolean tran = false;
@@ -423,20 +419,10 @@ public class DataAccessObject {
 		return tran;
 	}
 
-	public ArrayList<GoodsBean> getSaleInfo(int fileIndex) {
-		ArrayList<GoodsBean> saleInfo = new ArrayList<GoodsBean>();
-
-		return saleInfo;
-	}
-
-	public ArrayList<GoodsBean> getRefundList(int fileIndex, GoodsBean gb) {
+	public ArrayList<GoodsBean> getRefundList(OrderBean odb) {
 		ArrayList<GoodsBean> refundList = new ArrayList<GoodsBean>();
 
 		return refundList;
-	}
-
-	public void setRefundList(int fileIndex, ArrayList<GoodsBean> saleInfo) {
-
 	}
 
 	public void setGoodsInfo(int fileIndex, GoodsBean gb) {

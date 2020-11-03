@@ -16,11 +16,11 @@ public class FrontController {
 
 	private void init(String title) {
 		String[][] goodsList = null;
-		//String[][] refundList;
+		String[][] refundList;
 		String[] userInfo = null;
 		String[] saleInfo;
 		String[] goodsInfo;
-		//String[] refundInfo;
+		String[] refundInfo;
 		String selectService;
 		String empoyeeManage;
 		String salesManage;
@@ -84,7 +84,6 @@ public class FrontController {
 							}
 						}
 						break;
-						/*
 					case "2":
 						refundInfo = this.refund(title, userInfo);
 						refundList = bc.getRefundList(refundInfo);
@@ -109,7 +108,6 @@ public class FrontController {
 							break;
 						}
 						break;
-						*/
 					case "3":
 
 						while(true) {
@@ -448,16 +446,18 @@ public class FrontController {
 	}
 
 	private String[] refund(String title, String[] userInfo) {
-		String[] result = new String[2];
+		String[] result = new String[4];
 		result[0] = "S3";
+		result[1] = userInfo[0];
+		result[2] = userInfo[3];
 		this.print(title + "Refund\n\n[ ");
 		for(int i=0;i<userInfo.length;i++) {
 			this.print(userInfo[i] + " ");
 		}
 		this.print("]\n\n0. 이전화면"); 
 		this.print("\n\n주문코드________ : ");
-		result[1] = sc.next();
-		if(result[1].equals("0")) {
+		result[3] = sc.next();
+		if(result[3].equals("0")) {
 			result = null;
 		}
 		return result;
@@ -468,7 +468,7 @@ public class FrontController {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
 		String date = null;
-		String[] refundInfo = new String[2];
+		String[] refundInfo = new String[4];
 		String select;
 		int totalCost = 0;
 
@@ -515,7 +515,9 @@ public class FrontController {
 			break;
 		case "1":
 			refundInfo[0] = "S4";
-			refundInfo[1] = "C";
+			refundInfo[1] = userInfo[0];
+			refundInfo[2] = userInfo[3];
+			refundInfo[3] = "C";
 			break;
 		case "2":
 			refundInfo[0] = "S5";
@@ -532,7 +534,7 @@ public class FrontController {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		Date originalDate;
 		String date = null;
-		String[] refundInfo = new String[2];
+		String[] refundInfo = new String[4];
 		String select;
 		int totalCost = 0;
 
@@ -602,6 +604,9 @@ public class FrontController {
 			break;
 		case "2":
 			refundInfo[0] = "S4";
+			refundInfo[1] = userInfo[0];
+			refundInfo[2] = userInfo[3];
+			refundInfo[3] = "C";
 			break;
 		}
 

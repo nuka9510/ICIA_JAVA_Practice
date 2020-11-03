@@ -144,21 +144,24 @@ public class BackController {
 
 		sale.entrance(odb, goodsListBeanArrayList);
 	}
-/*
+
 	public String[][] getRefundList(String[] refundInfo) {
 		String[][] refundList = null;
 		ArrayList<GoodsBean> refundListArrayList;
-		GoodsBean gb = new GoodsBean();
+		OrderBean odb = new OrderBean();
 		Sale sale;
 
-		gb.setRequest(refundInfo[0]);
-		gb.setSaleDate(refundInfo[1]);
+		odb.setRequest(refundInfo[0]);
+		odb.setStCode(refundInfo[1]);
+		odb.setEmCode(refundInfo[2]);
+		odb.setOdCode(refundInfo[3]);
+		odb.setCmCode("CM001");
 
 		sale = new Sale();
 
-		refundListArrayList = sale.entrance(gb);
+		refundListArrayList = sale.entrance(odb);
 
-		if(gb.isResult()) {
+		if(refundListArrayList.size()>0) {
 			refundList = new String[refundListArrayList.size()][6];
 			for(int i=0;i<refundListArrayList.size();i++) {
 				refundList[i][0] = refundListArrayList.get(i).getSaleDate();
@@ -174,30 +177,33 @@ public class BackController {
 	}
 
 	public void setRefundList(String[] refundInfo, String[][] goodsList) {
-		GoodsBean gb = new GoodsBean();
-		GoodsBean goodsListBean;
-		ArrayList<OrderDetailBean> goodsListBeanArrayList = new ArrayList<OrderDetailBean>();
+		OrderBean odb = new OrderBean();
+		OrderDetailBean otb;
+		ArrayList<OrderDetailBean> refundList = new ArrayList<OrderDetailBean>();
 
 		Sale sale = new Sale();
 
-		gb.setRequest(refundInfo[0]);
+		odb.setRequest(refundInfo[0]);
+		odb.setStCode(refundInfo[1]);
+		odb.setEmCode(refundInfo[2]);
+		odb.setOdState(refundInfo[3]);
+		odb.setCmCode("CM001");
+		odb.setOdCode(goodsList[0][0]);
 
 		for(int i=0;i<goodsList.length;i++) {
-			goodsListBean = new GoodsBean();
+			otb = new OrderDetailBean();
 
-			goodsListBean.setSaleDate(goodsList[i][0]);
-			goodsListBean.setGoodsCode(goodsList[i][1]);
-			goodsListBean.setGoodsName(goodsList[i][2]);
-			goodsListBean.setGoodsAmount(Integer.parseInt(goodsList[i][3]));
-			goodsListBean.setGoodsPrice(Integer.parseInt(goodsList[i][4]));
-			goodsListBean.setGoodsExpireDate(goodsList[i][5]);
+			otb.setOdCode(goodsList[i][0]);
+			otb.setGoCode(goodsList[i][1]);
+			otb.setQty(Integer.parseInt(goodsList[i][3]));
+			otb.setOtState(refundInfo[3]);
 
-			goodsListBeanArrayList.add(goodsListBean);
+			refundList.add(otb);
 		}
 
-		sale.entrance(odb, goodsListBeanArrayList);
+		sale.entrance(odb, refundList);
 	}
-*/
+
 	public void goodsReg(String[] goodsInfo) {
 		GoodsBean gb = new GoodsBean();
 		Management manage;
